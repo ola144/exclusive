@@ -1,0 +1,13 @@
+<section class="mx-auto my-10">
+  <!-- Header -->
+  <div class="mb-6">
+    <app-title [title1]="'Our Products'" [title2]="'Explore Our Products'"></app-title>
+  </div>
+
+  <!-- Products -->
+  <div class="productGrid">
+    @for (product of products(); track $index) {
+      <app-product-card [product]="product" [hideDeleteBtn]="'hidden'"></app-product-card>
+    }
+  </div>
+</section>

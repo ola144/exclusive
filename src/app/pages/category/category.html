@@ -1,0 +1,16 @@
+<section class="main py-10 my-10 flex flex-col gap-10">
+  <app-title [title1]="'Category'" [title2]="categoryText()"></app-title>
+
+  <!-- Products -->
+  @if (categoryProducts().length === 0) {
+    <div class="flex items-center justify-center text-red-500">
+      <p>No available items for {{ categoryText() }}</p>
+    </div>
+  } @else {
+    <div class="productGrid">
+      @for (product of categoryProducts(); track $index) {
+        <app-product-card [product]="product"></app-product-card>
+      }
+    </div>
+  }
+</section>

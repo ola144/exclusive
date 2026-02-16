@@ -1,0 +1,25 @@
+<div
+  class="fixed inset-0 bg-black/50 h-screen w-full flex items-center justify-center z-900"
+  data-aos="fade-in"
+>
+  <div
+    class="bg-white w-4/5 max-w-2xl rounded-md p-4 text-center flex flex-col justify-center gap-2 h-60"
+  >
+    <p class="text-black">Are you sure want to logout?</p>
+    <div class="flex items-center justify-center gap-2">
+      <app-button
+        text="Cancel"
+        type="gray-btn"
+        size="md"
+        (handleOnlick)="confirmLogout.set(false)"
+      ></app-button>
+      <app-button
+        text="Logout"
+        type="red-btn"
+        size="md"
+        [loading]="loading()"
+        (handleOnlick)="logout()"
+      ></app-button>
+    </div>
+  </div>
+</div>

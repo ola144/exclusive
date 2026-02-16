@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+button {
+  @apply cursor-pointer text-left w-fit;
+}
+
+.scroll-nav {
+  @apply top-0 bg-gradient-to-l from-gray-300 to-gray-400;
+}

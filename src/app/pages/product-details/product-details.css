@@ -1,0 +1,15 @@
+@import 'tailwindcss';
+
+/* Minimal overrides for product-details page */
+.product-main-image {
+  @apply rounded bg-white;
+}
+
+.thumb-active {
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+
+/* Ensure images inside cards keep aspect */
+.related-img {
+  object-fit: contain;
+}

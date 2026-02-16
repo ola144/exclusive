@@ -1,0 +1,32 @@
+<section class="my-20 py-10">
+  <div class="w-full flex flex-col gap-5 border-b border-gray-400 pb-10 overflow-hidden">
+    <div class="main">
+      <app-title [title1]="'Categories'" [title2]="'Browse By Category'"></app-title>
+    </div>
+
+    <div class="flex items-center justify-center w-max scroll gap-12 overflow-hidden">
+      @for (category of categories; track $index) {
+        <button
+          class="border-2 border-gray-400 rounded-xl text-center mx-auto py-5 cursor-pointer text-gray-400 hover:bg-red-500 hover:text-white hover:border-0 w-full"
+          (click)="onNavigateToCategory(category.category)"
+        >
+          <div class="flex items-center flex-col gap-4 justify-center w-37.5">
+            <img [src]="category.img" [alt]="category.category" class="w-20 h-20" />
+            <h4 class="capitalize text-xl">{{ category.category }}</h4>
+          </div>
+        </button>
+      }
+      @for (category of categories; track $index) {
+        <button
+          class="border-2 border-gray-400 rounded-xl text-center mx-auto py-5 cursor-pointer text-gray-400 hover:bg-red-500 hover:text-white hover:border-0 w-full"
+          (click)="onNavigateToCategory(category.category)"
+        >
+          <div class="flex items-center flex-col gap-4 justify-center w-37.5">
+            <img [src]="category.img" [alt]="category.category" class="w-20 h-20" />
+            <h4 class="capitalize text-xl">{{ category.category }}</h4>
+          </div>
+        </button>
+      }
+    </div>
+  </div>
+</section>

@@ -1,0 +1,5 @@
+@import 'tailwindcss';
+
+.box {
+  @apply w-full shadow-xl p-5 rounded-md flex flex-col gap-5;
+}

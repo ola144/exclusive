@@ -1,0 +1,95 @@
+<section class="main my-10 py-10 flex flex-col gap-8">
+  <div class="flex items-center gap-3">
+    <button class="text-gray-400 cursor-pointer" routerLink="/cart">View Car</button>
+    <span class="text-gray-400">/</span>
+    <button class="text-black font-bold" disabled>Checkout</button>
+  </div>
+
+  <div class="grid sm:grid-cols-2 grid-cols-1 gap-10 gap-y-5 w-full">
+    <div class="flex flex-col gap-10">
+      <h2 class="font-bold">Billing Details</h2>
+      <div class="space-y-8">
+        <div class="input-group">
+          <input type="text" id="name" required />
+          <label for="name">Your Name <span class="text-red-400">*</span></label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="streetAddress" required />
+          <label for="streetAddress">Street Address<span class="text-red-400">*</span></label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="town" required />
+          <label for="town">Town/City <span class="text-red-400">*</span></label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="phone" required />
+          <label for="phone">Phone Number <span class="text-red-400">*</span></label>
+        </div>
+        <div class="input-group">
+          <input type="email" id="email" required />
+          <label for="email">Email Address<span class="text-red-400">*</span></label>
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="checkbox" id="email" class="" required />
+          <label for="email">Save this infomation for faster check-out next time</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full space-y-3">
+      @for (item of cartItems(); track $index) {
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <img [src]="item.image[0]" [alt]="item.name" class="w-10 h-10" />
+            <p>{{ item.name }}</p>
+          </div>
+          <p>${{ item.subtotal }}</p>
+        </div>
+      }
+      <div class="w-full space-y-6">
+        <div class="flex items-center justify-between border-b border-b-gray-400 pb-2 w-full">
+          <p class="">Subtotal:</p>
+          <p class="">${{ cartTotal() }}</p>
+        </div>
+        <div class="flex items-center justify-between border-b border-b-gray-400 pb-2 w-full">
+          <p class="">Shipping:</p>
+          <p class="">Free</p>
+        </div>
+        <div class="flex items-center justify-between pb-2 w-full">
+          <p class="">Total:</p>
+          <p class="">${{ cartTotal() }}</p>
+        </div>
+      </div>
+
+      <div class="space-y-4 w-full">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <input type="radio" name="payment" id="bank" />
+            <label for="bank">Bank</label>
+          </div>
+          <div class="flex items-center gap-1">
+            <button class="text-lg text-blue-500">
+              <i class="fa fa-cc-visa"></i>
+            </button>
+            <button class="text-lg text-red-500">
+              <i class="fa fa-cc-mastercard"></i>
+            </button>
+            <button class="text-lg text-pink-500">
+              <i class="fa fa-cc-stripe"></i>
+            </button>
+            <button class="text-lg text-yellow-500">
+              <i class="fa fa-cc-paypal"></i>
+            </button>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <input type="radio" name="payment" id="cash" />
+          <label for="cash">Cash on delivery</label>
+        </div>
+      </div>
+      <div class="flex justify-end">
+        <app-button text="Place Order" type="red-btn" size="md"></app-button>
+      </div>
+    </div>
+  </div>
+</section>

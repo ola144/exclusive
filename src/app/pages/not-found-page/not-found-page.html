@@ -1,0 +1,18 @@
+<section class="main my-10 py-10 h-full">
+  <div class="flex items-center gap-3">
+    <button class="text-gray-400 cursor-pointer" (click)="onNavigateHome('/')">Home</button>
+    <span class="text-gray-400">/</span>
+    <button class="text-black font-bold" disabled>Not Found</button>
+  </div>
+
+  <div class="flex items-center justify-center flex-col gap-10 h-full">
+    <h1>404 Not Found</h1>
+    <p>Your visitedpage not found. You may go home page.</p>
+    <app-button
+      [text]="'Back to Home Page'"
+      [type]="'red-btn'"
+      size="md"
+      (handleOnlick)="onNavigateHome('/')"
+    ></app-button>
+  </div>
+</section>

@@ -1,0 +1,150 @@
+<aside class="lg:w-64 w-32 bg-gray-900 text-white shadow-lg flex flex-col h-screen">
+  <!-- Logo -->
+  <div class="p-6 border-b border-gray-700 flex flex-col gap-2">
+    <h4 class="sm:text-2xl text-xl font-bold">Admin</h4>
+    <span class="text-gray-400 lg:text-sm text-[10px]">Control Panel</span>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto px-3 py-2 space-y-1">
+    <!-- Dashboard -->
+    <a
+      routerLink="/admin/dashboard"
+      routerLinkActive="bg-blue-600"
+      class="flex items-center space-x-3 px-4 py-3 rounded-lg transition hover:bg-gray-800"
+      title="Dashboard"
+    >
+      <span class="icon-dashboard">📊</span>
+      <span class="lg:block hidden">Dashboard</span>
+    </a>
+
+    <!-- Products -->
+    <div>
+      <button
+        (click)="toggleMenu('products')"
+        class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition hover:bg-gray-800"
+        title="Products"
+      >
+        <div class="flex items-center space-x-3">
+          <span>📦</span>
+          <span class="lg:block hidden">Products</span>
+        </div>
+        <span [class.rotate-180]="expandedMenus().includes('products')"> ▼ </span>
+      </button>
+      <div *ngIf="expandedMenus().includes('products')" class="lg:ml-8 ml-2 space-y-2 mt-2">
+        <a
+          routerLink="/admin/products"
+          routerLinkActive="text-blue-400"
+          class="block lg:px-4 px-2 py-2 rounded transition hover:bg-gray-800 lg:text-sm text-[10px]"
+        >
+          All Products
+        </a>
+        <!-- <a
+          routerLink="/admin/products/add"
+          routerLinkActive="text-blue-400"
+          class="block px-4 py-2 rounded transition hover:bg-gray-800"
+        >
+          Add Product
+        </a> -->
+      </div>
+    </div>
+
+    <!-- Orders -->
+    <div>
+      <button
+        (click)="toggleMenu('orders')"
+        class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition hover:bg-gray-800"
+        title="Orders"
+      >
+        <div class="flex items-center space-x-3">
+          <span>📋</span>
+          <span class="lg:block hidden">Orders</span>
+        </div>
+        <span [class.rotate-180]="expandedMenus().includes('orders')"> ▼ </span>
+      </button>
+      <div *ngIf="expandedMenus().includes('orders')" class="lg:ml-8 ml-2 space-y-2 mt-2">
+        <a
+          routerLink="/admin/orders"
+          routerLinkActive="text-blue-400"
+          class="block lg:px-4 px-2 py-2 rounded transition hover:bg-gray-800 lg:text-sm text-[10px]"
+        >
+          All Orders
+        </a>
+        <!-- <a
+          routerLink="/admin/orders?status=pending"
+          routerLinkActive="text-blue-400"
+          class="block px-4 py-2 rounded transition hover:bg-gray-800"
+        >
+          Pending
+        </a> -->
+      </div>
+    </div>
+
+    <!-- Customers -->
+    <div>
+      <button
+        (click)="toggleMenu('customers')"
+        class="w-full flex items-center justify-between px-4 py-3 rounded-lg transition hover:bg-gray-800"
+        title="Customers"
+      >
+        <div class="flex items-center space-x-3">
+          <span>👥</span>
+          <span class="lg:block hidden">Customers</span>
+        </div>
+        <span [class.rotate-180]="expandedMenus().includes('customers')"> ▼ </span>
+      </button>
+      <div *ngIf="expandedMenus().includes('customers')" class="lg:ml-8 ml-2 space-y-2 mt-2">
+        <a
+          routerLink="/admin/customers"
+          routerLinkActive="text-blue-400"
+          class="block lg:px-4 px-2 py-2 rounded transition hover:bg-gray-800 lg:text-sm text-[10px]"
+        >
+          All Customers
+        </a>
+      </div>
+    </div>
+
+    <!-- Reports -->
+    <a
+      routerLink="/admin/reports"
+      routerLinkActive="bg-blue-600"
+      class="flex items-center space-x-3 px-4 py-3 rounded-lg transition hover:bg-gray-800"
+      title="Reports"
+    >
+      <span>📈</span>
+      <span class="lg:block hidden">Reports</span>
+    </a>
+
+    <!-- Settings -->
+    <a
+      routerLink="/admin/settings"
+      routerLinkActive="bg-blue-600"
+      class="flex items-center space-x-3 px-4 py-3 rounded-lg transition hover:bg-gray-800"
+      title="Settings"
+    >
+      <span>⚙️</span>
+      <span class="lg:block hidden">Settings</span>
+    </a>
+
+    <!-- Settings -->
+    <a
+      class="flex items-center space-x-3 px-4 py-3 rounded-lg transition hover:bg-gray-800 cursor-pointer"
+      title="Logout"
+      (click)="confirmLogout.set(true)"
+    >
+      <span class="text-white font-bold text-lg flex items-center gap-1">
+        <i class="fa fa-sign-out"></i>
+      </span>
+      <span class="lg:block hidden">Logout</span>
+    </a>
+  </nav>
+
+  <!-- Footer -->
+  <div class="p-4 border-t border-gray-700 text-xs text-gray-400">
+    <p>Admin Panel v1.0</p>
+  </div>
+</aside>
+
+@if (confirmLogout()) {
+  <app-confirm-logout-popup [confirmLogout]="confirmLogout"></app-confirm-logout-popup>
+}

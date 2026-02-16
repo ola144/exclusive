@@ -1,0 +1,20 @@
+<section class="mx-auto my-20 pt-10">
+  <div class="main pb-10">
+    <!-- Header -->
+    <div class="flex items-center justify-between gap-8 mb-6">
+      <app-title [title1]="'This Month'" [title2]="'Best Selling Product'"></app-title>
+      <app-button
+        [text]="'View All'"
+        [type]="'red-btn'"
+        (handleOnlick)="onNavigateToProduct('/products')"
+      ></app-button>
+    </div>
+
+    <!-- Products -->
+    <div class="productGrid">
+      @for (product of products; track $index) {
+        <app-product-card [product]="product" [hideDeleteBtn]="'hidden'"></app-product-card>
+      }
+    </div>
+  </div>
+</section>

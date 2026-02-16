@@ -1,0 +1,330 @@
+<section class="space-y-6">
+  <!-- Page Title -->
+  <div class="flex justify-between items-center gap-1">
+    <div>
+      <h5 class="md:text-3xl sm:text-xl text-lg font-bold text-gray-800">Products</h5>
+      <p class="text-gray-600">Manage your product inventory</p>
+    </div>
+    <div class="flex gap-2 flex-wrap">
+      <app-button
+        text="+ Add Product"
+        size="md"
+        type="green-outline"
+        (handleOnlick)="showAddForm = true"
+      ></app-button>
+      <app-button
+        text="+ Add Category"
+        size="md"
+        type="green-outline"
+        (handleOnlick)="showAddCategoryForm.set(true)"
+      ></app-button>
+    </div>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="bg-white rounded-lg shadow-md p-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <input
+        type="text"
+        placeholder="Search products..."
+        [(ngModel)]="searchTerm"
+        (input)="productService.setSearchQuery(searchTerm)"
+        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <select
+        [(ngModel)]="selectedCategory"
+        (change)="productService.setCategory(selectedCategory)"
+        class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 capitalize"
+      >
+        <option value="">Select Category</option>
+        @for (item of categories(); track $index) {
+          <option [value]="item.categoryName">{{ item.categoryName }}</option>
+        }
+      </select>
+      <app-button
+        text="📥 Export"
+        size="lg"
+        type="green-btn"
+        (handleOnlick)="exportToCSV()"
+      ></app-button>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-gray-100 border-b">
+            <th class="px-4 py-3 text-left">Product</th>
+            <th class="px-4 py-3 text-left">Category</th>
+            <th class="px-4 py-3 text-left">Price</th>
+            <th class="px-4 py-3 text-left">Stock</th>
+            <th class="px-4 py-3 text-left">Discount</th>
+            <th class="px-4 py-3 text-left">Status</th>
+            <th class="px-4 py-3 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (product of productService.getAllProducts(); track $index) {
+            <tr class="border-b hover:bg-gray-50">
+              <td class="px-4 py-3">
+                <div class="flex items-center space-x-3">
+                  <img
+                    [src]="product.image"
+                    alt="{{ product.name }}"
+                    class="w-10 h-10 object-cover rounded"
+                  />
+                  <div>
+                    <p class="font-semibold">{{ product.name }}</p>
+                    <p class="text-gray-500 text-xs">ID: {{ product.id }}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3">{{ product.category }}</td>
+              <td class="px-4 py-3 font-semibold">${{ product.price | number: '1.2-2' }}</td>
+              <td class="px-4 py-3">
+                <span [class]="getStockColor(product.stock)">
+                  {{ product.stock }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                @if (product.discount) {
+                  <span
+                    class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-semibold"
+                  >
+                    {{ product.discount }}%
+                  </span>
+                }
+                @if (!product.discount) {
+                  <span class="text-gray-500">-</span>
+                }
+              </td>
+              <td class="px-4 py-3">
+                <span
+                  [class]="
+                    product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  "
+                  class="px-3 py-1 rounded-full text-xs font-semibold"
+                >
+                  {{ product.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </td>
+              <td class="px-4 py-3">
+                <div class="flex gap-2">
+                  <button
+                    (click)="editProduct(product)"
+                    class="text-blue-600 hover:text-blue-800 font-semibold"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    (click)="deleteProduct(product.id)"
+                    class="text-red-600 hover:text-red-800 font-semibold"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Add/Edit Product Form -->
+@if (showAddForm) {
+  <div class="bg-black/50 w-full h-full flex items-center justify-center fixed inset-0 z-900 px-10">
+    <div class="bg-white rounded-lg shadow-md p-6 w-140 h-150 max-w-full overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">
+          {{ editingProduct ? 'Edit Product' : 'Add New Product' }}
+        </h2>
+        <button (click)="closeForm()" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
+      </div>
+
+      <form (ngSubmit)="saveProduct()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Product Name * </label>
+          <input
+            type="text"
+            [(ngModel)]="formData.name"
+            name="name"
+            required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Category * </label>
+          <select
+            [(ngModel)]="formData.category"
+            name="category"
+            required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Category</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Home">Home</option>
+            <option value="Books">Books</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Price * </label>
+          <input
+            type="number"
+            [(ngModel)]="formData.price"
+            name="price"
+            step="0.01"
+            required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Original Price </label>
+          <input
+            type="number"
+            [(ngModel)]="formData.originalPrice"
+            name="originalPrice"
+            step="0.01"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Stock * </label>
+          <input
+            type="number"
+            [(ngModel)]="formData.stock"
+            name="stock"
+            required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Discount (%) </label>
+          <input
+            type="number"
+            [(ngModel)]="formData.discount"
+            name="discount"
+            min="0"
+            max="100"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Description * </label>
+          <textarea
+            [(ngModel)]="formData.description"
+            name="description"
+            required
+            rows="4"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+        </div>
+
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Image URL * </label>
+          <input
+            type="url"
+            [(ngModel)]="formData.image"
+            name="image"
+            required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <div class="mt-2" *ngIf="formData.image">
+            <img [src]="formData.image" alt="Preview" class="w-32 h-32 object-cover rounded" />
+          </div>
+        </div>
+
+        <div class="md:col-span-2 flex gap-2">
+          <button
+            type="submit"
+            class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            {{ editingProduct ? 'Update Product' : 'Add Product' }}
+          </button>
+          <button
+            type="button"
+            (click)="closeForm()"
+            class="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Add/Edit Product Form -->
+@if (showAddCategoryForm()) {
+  <div class="bg-black/50 w-full h-full flex items-center justify-center fixed inset-0 z-900 px-10">
+    <div class="bg-white rounded-lg shadow-md p-6 w-140 h-80 max-w-full overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold">Add Category</h2>
+        <button
+          (click)="showAddCategoryForm.set(false)"
+          class="text-gray-500 hover:text-gray-700 text-2xl"
+        >
+          ✕
+        </button>
+      </div>
+
+      <form class="space-y-3">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Category Name * </label>
+          <input
+            type="text"
+            [(ngModel)]="categoryName"
+            name="categoryName"
+            required
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div class="flex items-center ga-3">
+          <app-button
+            text="Upload Category Image"
+            type="gray-btn"
+            size="md"
+            (handleOnlick)="compressImg()"
+          ></app-button>
+          @if (imagePreview()) {
+            <img [src]="imagePreview()" alt="" class="h-20 w-20 rounded-full" />
+            <!-- <input
+              type="text"
+              [(ngModel)]="categoryObj.categoryImg"
+              name="categoryImg"
+              disabled
+              class="w-full px-4 py-2 border rounded-lg disabled:bg-gray-600"
+            /> -->
+          }
+        </div>
+
+        <div class="flex justify-end items-center gap-2">
+          <app-button
+            text="Add Category"
+            type="green-btn"
+            size="md"
+            [loading]="loading()"
+            (handleOnlick)="addCategory()"
+          ></app-button>
+          <app-button
+            text="Cancel"
+            type="gray-btn"
+            size="md"
+            (handleOnlick)="showAddCategoryForm.set(false)"
+          ></app-button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

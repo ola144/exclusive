@@ -1,0 +1,104 @@
+<section class="main my-10 py-20 flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      @if (localData()?.role === 'user') {
+        <button class="text-gray-400 cursor-pointer" (click)="onNavigateHome('/')">Home</button>
+      }
+      @if (localData()?.role === 'admin') {
+        <button class="text-gray-400 cursor-pointer" (click)="onNavigateHome('/admin/dashboard')">
+          Dashboard
+        </button>
+      }
+      <span class="text-gray-400">/</span>
+      <button class="text-black font-bold" disabled>Complete Profie</button>
+    </div>
+    <p class="text-black">
+      Welcome! <span class="text-red-500">{{ userProfile()?.name }}</span>
+    </p>
+  </div>
+
+  <div class="shadow-2xl rounded-lg p-5 flex flex-col gap-5">
+    <h3 class="text-red-500 capitalize font-bold">Complete Your Profile</h3>
+    <div class="w-full flex flex-col gap-4">
+      <div class="flex items-center justify-center">
+        <div class="flex flex-col gap-3">
+          <div class="flex items-center justify-center gap-1">
+            <button
+              type="button"
+              class="rounded-sm border border-gray-500 px-2 py-1 outline-none disabled:bg-gray-400"
+              (click)="compress()"
+            >
+              Upload Profile Picture
+            </button>
+          </div>
+
+          @if (imagePreview()) {
+            <img
+              class="w-32 h-32 rounded-full object-cover border mx-auto"
+              [src]="imagePreview()"
+            />
+          }
+        </div>
+      </div>
+      <div class="flex items-start flex-wrap md:flex-nowrap lg:gap-x-10 gap-x-5 gap-y-2 w-full">
+        <div class="flex flex-col gap-1 w-full">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            placeholder="Mid"
+            [value]="userProfile()?.name.split(' ')[0]"
+            disabled
+            class="rounded-sm border border-gray-500 px-2 py-1 outline-none disabled:bg-gray-400"
+          />
+        </div>
+        <div class="flex flex-col gap-1 w-full">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            placeholder="Rimel"
+            [value]="userProfile()?.name.split(' ')[1]"
+            disabled
+            class="rounded-sm border border-gray-500 px-2 py-1 outline-none disabled:bg-gray-400"
+          />
+        </div>
+      </div>
+      <div class="flex items-start flex-wrap md:flex-nowrap lg:gap-x-10 gap-x-5 gap-y-2 w-full">
+        <div class="flex flex-col gap-1 w-full">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [value]="userProfile()?.email"
+            placeholder="rimel@gmail.com"
+            disabled
+            class="rounded-sm border border-gray-500 px-2 py-1 outline-none disabled:bg-gray-400"
+          />
+        </div>
+        <div class="flex flex-col gap-1 w-full">
+          <label for="address">Address</label>
+          <input
+            type="text"
+            id="address"
+            placeholder="Kingston, 5236, United State"
+            name="address"
+            [(ngModel)]="address"
+            class="rounded-sm border border-gray-500 px-2 py-1 outline-none disabled:bg-gray-400"
+          />
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2">
+        <app-button
+          [text]="'Save Changes'"
+          [size]="'md'"
+          [type]="'red-btn'"
+          [loading]="loading()"
+          [disabled]="!address || !imagePreview()"
+          (handleOnlick)="saveChanges()"
+        ></app-button>
+      </div>
+    </div>
+  </div>
+</section>

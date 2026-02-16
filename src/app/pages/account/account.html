@@ -1,0 +1,51 @@
+<section class="main my-10 py-20 flex flex-col gap-8">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <button class="text-gray-400 cursor-pointer" (click)="onNavigateHome('/')">Home</button>
+      <span class="text-gray-400">/</span>
+      <button class="text-black font-bold" disabled>My Account</button>
+    </div>
+    <p class="text-black">
+      Welcome! <span class="text-red-500 capitalize">{{ userProfile()?.name }}</span>
+    </p>
+  </div>
+
+  <div class="grid sm:grid-cols-3 grid-cols-1 gap-6 w-full">
+    <div class="col-span-1 flex flex-col gap-3">
+      <div class="flex flex-col gap-1">
+        <h4 class="font-bold">Manage My Account</h4>
+        <div class="mt-2 ml-10">
+          <button
+            class="font-medium"
+            [ngClass]="currentTab() === 'profile' ? 'text-red-500' : 'text-gray-400'"
+            (click)="toggleTab('profile')"
+          >
+            My Profile
+          </button>
+        </div>
+      </div>
+      <div class="flex flex-col gap-1">
+        <h4 class="font-bold">Manage My Order</h4>
+        <div class="mt-2 ml-10 flex flex-col gap-1 items-start">
+          <button
+            class="font-medium"
+            [ngClass]="currentTab() === 'order' ? 'text-red-500' : 'text-gray-400'"
+            (click)="toggleTab('order')"
+          >
+            My Orders
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="sm:col-span-2">
+      @switch (currentTab()) {
+        @case ('profile') {
+          <app-edit-profile></app-edit-profile>
+        }
+        @case ('order') {
+          <app-my-orders></app-my-orders>
+        }
+      }
+    </div>
+  </div>
+</section>

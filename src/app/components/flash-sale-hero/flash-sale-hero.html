@@ -1,0 +1,78 @@
+<div class="main bg-black text-white my-10">
+  <div class="max-w-6xl mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <!-- Left Content -->
+      <div class="flex flex-col justify-center gap-3">
+        <p class="text-green-400 text-sm font-semibold uppercase tracking-wider">Categories</p>
+
+        <h1 class="text-4xl lg:text-5xl font-bold leading-tight">
+          Enhance Your<br />Music Experience
+        </h1>
+
+        <!-- Countdown Timer -->
+        <div class="flex gap-6">
+          <!-- Days -->
+          <div class="flex flex-col items-center">
+            <div
+              class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-black font-bold text-2xl mb-2"
+            >
+              {{ days() | number : '2.0' }}
+            </div>
+            <span class="text-xs text-gray-400 uppercase">Days</span>
+          </div>
+
+          <!-- Hours -->
+          <div class="flex flex-col items-center">
+            <div
+              class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-black font-bold text-2xl mb-2"
+            >
+              {{ hours() | number : '2.0' }}
+            </div>
+            <span class="text-xs text-gray-400 uppercase">Hours</span>
+          </div>
+
+          <!-- Minutes -->
+          <div class="flex flex-col items-center">
+            <div
+              class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-black font-bold text-2xl mb-2"
+            >
+              {{ minutes() | number : '2.0' }}
+            </div>
+            <span class="text-xs text-gray-400 uppercase">Minutes</span>
+          </div>
+
+          <!-- Seconds -->
+          <div class="flex flex-col items-center">
+            <div
+              class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-black font-bold text-2xl mb-2"
+            >
+              {{ seconds() | number : '2.0' }}
+            </div>
+            <span class="text-xs text-gray-400 uppercase">Seconds</span>
+          </div>
+        </div>
+
+        <!-- Buy Now Button -->
+        <div>
+          <app-button [text]="'Buy Now!'" [size]="'md'" [type]="'green-btn'"></app-button>
+        </div>
+      </div>
+
+      <!-- Right Content - Product Image -->
+      <div class="flex justify-center items-center">
+        <div class="w-full max-w-md">
+          <!-- Product Image Placeholder - Replace with actual image -->
+          <img
+            src="/images/jbl.png"
+            alt="JBL Speaker"
+            class="w-full h-auto object-cover rounded-lg shadow-2xl"
+          />
+          <!-- Or use a solid product showcase area -->
+          <!-- <div class="w-full h-96 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg flex items-center justify-center">
+            <p class="text-gray-500 text-xl">Product Image</p>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

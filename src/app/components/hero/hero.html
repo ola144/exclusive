@@ -1,0 +1,95 @@
+<!-- 
+
+<div
+    class="main h-full grid relative md:grid-cols-2 place-items-center justify-center gap-3"
+  >
+    <div class="h-full flex flex-col gap-3 justify-center">
+      <h1>Dr. Moses Sowale</h1>
+      <p>
+        Dad, author, mentor, discipler, Anglican priest, and visionary pioneer.
+      </p>
+      <button
+        routerLink="/about-founder-details"
+        class="py-[10px] px-[20px] rounded-md text-white bg-[#C48A6A] h-[40px] w-fit"
+      >
+        More About me
+      </button>
+    </div>
+    <img
+      src="../../assets/revamp/rev-moses.png"
+      alt=""
+      class="md:absolute md:bottom-0 w-[80vw] md:w-[50vw] h-full md:right-0"
+    />
+  </div>
+
+-->
+
+<section class="bg-[#F2F0F1] w-full h-fit pt-20">
+  <div class="main relative">
+    <!-- grid grid-cols-2 w-fit gap-0 relative -->
+    <div class="grid relative lg:grid-cols-2 place-items-center justify-center gap-3">
+      <div class="w-fit col-span-1 relative z-50 lg:pl-10 xl:pl-0">
+        <div class="flex flex-col gap-6">
+          <h1
+            class="sm:w-[577px] w-full uppercase font-extrabold font-serif text-black sm:h-[173px] h-fit"
+          >
+            find clothes that matches your style
+          </h1>
+          <p class="text-gray-700 font-medium sm:w-[545px] w-full">
+            Browse through our diverse range of meticulously crafted garments, designed to bring out
+            your individuality and cater to your sense of style.
+          </p>
+          <app-button
+            [text]="'Shop Now'"
+            [type]="'red-btn'"
+            [routerLink]="'/products'"
+            (handleOnlick)="onNavigateToProduct('/products')"
+          ></app-button>
+          <div class="flex items-center flex-wrap gap-x-8 gap-y-2 lg:mb-20">
+            <div class="flex flex-col gap-0">
+              <h3 class="font-bold text-red-500">200+</h3>
+              <p class="text-gray-400">International Brands</p>
+            </div>
+            <div class="flex flex-col gap-0">
+              <h3 class="font-bold text-red-500">2,000+</h3>
+              <p class="text-gray-400">High-Quality Products</p>
+            </div>
+            <div class="flex flex-col gap-0">
+              <h3 class="font-bold text-red-500">30,000+</h3>
+              <p class="text-gray-400">Happy Customers</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-full col-span-1">
+        <!--  absolute left-0 bottom-0 object-fit z-20 w-[80vw] md:w-[50vw] h-full-->
+        <img
+          src="/images/exlusive-hero.png"
+          alt="Hero Image"
+          class="lg:absolute md:bottom-0 lg:h-[450px] lg:w-[100vw] w-full md:right-0 mx-auto"
+        />
+        <div class="w-full relative hidden lg:block">
+          <img src="/images/hero-vector.png" alt="Vector" class="w-20 absolute top-0 right-0" />
+          <img src="/images/hero-vector.png" alt="Vector" class="w-10 absolute -bottom-56 left-0" />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Brands Section -->
+<section class="bg-red-600 w-full h-fit py-5 overflow-hidden relative">
+  <div class="pointer-events-none absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white"></div>
+  <div
+    class="pointer-events-none absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white"
+  ></div>
+
+  <div class="flex items-center justify-center w-max scroll gap-12">
+    <!-- flex-wrap gap-x-20 gap-y-10 -->
+    @for(brand of brands(); track $index){
+    <img [src]="brand.logo" [alt]="brand.name" class="h-5 w-auto object-contain" />
+    } @for(brand of brands(); track $index){
+    <img [src]="brand.logo" [alt]="brand.name" class="h-5 w-auto object-contain" />
+    }
+  </div>
+</section>

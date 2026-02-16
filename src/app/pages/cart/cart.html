@@ -1,0 +1,83 @@
+<section class="main my-10 py-10 flex flex-col gap-8">
+  <div class="flex items-center gap-3">
+    <button class="text-gray-400 cursor-pointer" (click)="onNavigateHome('/')">Home</button>
+    <span class="text-gray-400">/</span>
+    <button class="text-black font-bold" disabled>Cart</button>
+  </div>
+  <div class="w-full flex flex-col gap-8">
+    <table class="w-full">
+      <thead class="my-5">
+        <tr class="text-center text-gray-400 shadow-md rounded-md my-5 px-8">
+          <th class="py-4">Product</th>
+          <th class="py-4">Price</th>
+          <th class="py-4">Quartity</th>
+          <th class="py-4">Subtotal</th>
+        </tr>
+      </thead>
+      <tbody class="pl-4">
+        @for (item of cartItems(); track $index) {
+          <tr class="shadow-md rounded-md my-5 px-8 py-4">
+            <td class="justify-center flex items-center gap-2">
+              <span class="relative">
+                <img [src]="item.image[0]" [alt]="item.name" class="w-10 h-10" />
+                <button
+                  class="text-white bg-red-500 size-4 rounded-full flex items-center justify-center text-sm absolute left-0 top-0"
+                  (click)="deleteCartItem(item)"
+                >
+                  <i class="fa fa-close"></i>
+                </button>
+              </span>
+              <span class="text-[10px]">{{ item.name }}</span>
+            </td>
+            <td class="text-center">${{ item.price }}</td>
+            <td
+              class="border border-gray-400 p-0.5 flex items-center gap-4 w-fit mx-auto px-1 py-1 my-2"
+            >
+              <!-- <input
+                type="number"
+                [value]="item.quantity"
+                class="border-0 outline-none w-fit h-fit"
+              /> -->
+              <span>{{ item.quantity }}</span>
+              <div class="flex flex-col gap-2">
+                <button (click)="increaseQty(item)"><i class="fa fa-arrow-circle-up"></i></button>
+                <button (click)="decreaseQty(item)"><i class="fa fa-arrow-circle-down"></i></button>
+              </div>
+            </td>
+            <td class="text-center">${{ item.subtotal }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="flex items-center justify-end">
+      <app-button text="Return To Shop" size="md" [routerLink]="'/products'"></app-button>
+    </div>
+  </div>
+
+  <div class="flex items-start justify-end">
+    <div class="border border-black p-3 rounded-sm space-y-3 w-1/2">
+      <h4 class="font-bold">Cart Total</h4>
+      <div class="flex items-center justify-between border-b border-b-gray-400 pb-2 w-full">
+        <p class="">Subtotal:</p>
+        <p class="">${{ cartTotal() }}</p>
+      </div>
+      <div class="flex items-center justify-between border-b border-b-gray-400 pb-2 w-full">
+        <p class="">Shipping:</p>
+        <p class="">Free</p>
+      </div>
+      <div class="flex items-center justify-between pb-2 w-full">
+        <p class="">Total:</p>
+        <p class="">${{ cartTotal() }}</p>
+      </div>
+      <div class="flex justify-center">
+        <app-button
+          text="Proceeds To Checkout"
+          type="red-btn"
+          size="md"
+          [routerLink]="'/checkout'"
+        ></app-button>
+      </div>
+    </div>
+  </div>
+</section>

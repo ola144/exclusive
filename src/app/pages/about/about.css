@@ -1,0 +1,20 @@
+@import 'tailwindcss';
+
+.tns-nav {
+  @apply flex justify-center gap-2 mt-4 pointer-events-auto z-50;
+}
+.tns-nav button {
+  @apply size-2 rounded-full bg-gray-300 border-none p-0;
+}
+
+.tns-nav button.tns-nav-active {
+  @apply bg-gray-900;
+}
+
+.social {
+  @apply scale-0;
+}
+
+.member:hover .social {
+  @apply scale-100;
+}
