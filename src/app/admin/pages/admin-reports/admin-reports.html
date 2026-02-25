@@ -6,7 +6,7 @@
   </div>
 
   <!-- Date Range Filter -->
-  <div class="bg-white rounded-lg shadow-md p-4">
+  <!-- <div class="bg-white rounded-lg shadow-md p-4">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
       <div>
         <label class="block text-sm font-semibold text-gray-700 mb-2">From Date</label>
@@ -37,50 +37,35 @@
         <app-button text="Generate Report" type="green-btn" size="md"></app-button>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Sales Analytics -->
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <div class="bg-white rounded-lg shadow-md p-6">
       <p class="text-gray-600 text-sm">Total Sales</p>
-      <p class="text-4xl font-bold text-green-600 my-2">$12,543.00</p>
-      <p class="text-green-600 text-xs">↑ 12% from last period</p>
+      <p class="text-4xl font-bold text-green-600 my-2">
+        ${{ orderService.totalRevenue() | number: '1.2-2' }}%
+      </p>
+      <!-- <p class="text-green-600 text-xs">↑ 12% from last period</p> -->
     </div>
 
     <div class="bg-white rounded-lg shadow-md p-6">
       <p class="text-gray-600 text-sm">Average Order Value</p>
-      <p class="text-4xl font-bold text-blue-600 my-2">$125.43</p>
-      <p class="text-blue-600 text-xs">↓ 2% from last period</p>
+      <p class="text-4xl font-bold text-blue-600 my-2">
+        ${{ customerService.averageOrderValue() | number: '1.2-2' }}%
+      </p>
+      <!-- <p class="text-blue-600 text-xs">↓ 2% from last period</p> -->
     </div>
 
     <div class="bg-white rounded-lg shadow-md p-6">
       <p class="text-gray-600 text-sm">Conversion Rate</p>
-      <p class="text-4xl font-bold text-purple-600 my-2">3.24%</p>
-      <p class="text-purple-600 text-xs">↑ 0.5% from last period</p>
-    </div>
-  </div>
-
-  <!-- Charts Placeholder -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    <!-- Sales Chart -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Sales Trend</h3>
-      <div class="h-64 bg-gray-100 rounded flex items-center justify-center text-gray-500">
-        📊 Chart.js Integration - Sales Trend (Install Chart.js for visualization)
-      </div>
-    </div>
-
-    <!-- Category Distribution -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Sales by Category</h3>
-      <div class="h-64 bg-gray-100 rounded flex items-center justify-center text-gray-500">
-        📈 Chart.js Integration - Category Distribution (Install Chart.js for visualization)
-      </div>
+      <p class="text-4xl font-bold text-purple-600 my-2">{{ conversionRate() }}%</p>
+      <!-- <p class="text-purple-600 text-xs">↑ 0.5% from last period</p> -->
     </div>
   </div>
 
   <!-- Product Performance -->
-  <div class="bg-white rounded-lg shadow-md p-6">
+  <!-- <div class="bg-white rounded-lg shadow-md p-6">
     <h3 class="text-lg font-semibold text-gray-800 mb-4">Top Selling Products</h3>
     <div class="overflow-x-auto">
       <table class="w-full text-sm">
@@ -120,71 +105,49 @@
         </tbody>
       </table>
     </div>
-  </div>
+  </div> -->
 
-  <!-- Customer Analytics -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Category Distribution -->
     <div class="bg-white rounded-lg shadow-md p-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Customer Demographics</h3>
-      <div class="space-y-3">
-        <div>
-          <div class="flex justify-between mb-1">
-            <span class="text-sm text-gray-600">New Customers</span>
-            <span class="text-sm font-semibold">145</span>
-          </div>
-          <div class="bg-gray-200 rounded-full h-2">
-            <div class="bg-blue-500 h-2 rounded-full" style="width: 45%"></div>
-          </div>
-        </div>
-        <div>
-          <div class="flex justify-between mb-1">
-            <span class="text-sm text-gray-600">Returning Customers</span>
-            <span class="text-sm font-semibold">267</span>
-          </div>
-          <div class="bg-gray-200 rounded-full h-2">
-            <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
-          </div>
-        </div>
-        <div>
-          <div class="flex justify-between mb-1">
-            <span class="text-sm text-gray-600">Inactive Customers</span>
-            <span class="text-sm font-semibold">32</span>
-          </div>
-          <div class="bg-gray-200 rounded-full h-2">
-            <div class="bg-orange-500 h-2 rounded-full" style="width: 10%"></div>
-          </div>
-        </div>
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Sales by Category</h3>
+      <div class="h-64 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+        <canvas #categoryChart class="h-96"></canvas>
       </div>
     </div>
 
+    <!-- CUSTOMER SATISFACTION -->
     <div class="bg-white rounded-lg shadow-md p-6">
       <h3 class="text-lg font-semibold text-gray-800 mb-4">Customer Satisfaction</h3>
       <div class="space-y-3">
         <div>
           <div class="flex justify-between mb-1">
             <span class="text-sm text-gray-600">5 Stars</span>
-            <span class="text-sm font-semibold">1,245</span>
+            <span class="text-sm font-semibold">{{ fiveStarReview() }}</span>
           </div>
           <div class="bg-gray-200 rounded-full h-2">
-            <div class="bg-green-500 h-2 rounded-full" style="width: 88%"></div>
+            <div class="bg-green-500 h-2 rounded-full" [style.width.%]="fiveStarReview()"></div>
           </div>
         </div>
         <div>
           <div class="flex justify-between mb-1">
             <span class="text-sm text-gray-600">4 Stars</span>
-            <span class="text-sm font-semibold">142</span>
+            <span class="text-sm font-semibold">{{ fourStarReview() }}</span>
           </div>
           <div class="bg-gray-200 rounded-full h-2">
-            <div class="bg-blue-500 h-2 rounded-full" style="width: 10%"></div>
+            <div class="bg-blue-500 h-2 rounded-full" [style.width.%]="fourStarReview()"></div>
           </div>
         </div>
         <div>
           <div class="flex justify-between mb-1">
             <span class="text-sm text-gray-600">3 Stars and Below</span>
-            <span class="text-sm font-semibold">25</span>
+            <span class="text-sm font-semibold">{{ threeStarAndBelowReview() }}</span>
           </div>
           <div class="bg-gray-200 rounded-full h-2">
-            <div class="bg-red-500 h-2 rounded-full" style="width: 2%"></div>
+            <div
+              class="bg-red-500 h-2 rounded-full"
+              [style.width.%]="threeStarAndBelowReview()"
+            ></div>
           </div>
         </div>
       </div>
@@ -192,12 +155,12 @@
   </div>
 
   <!-- Export Section -->
-  <div class="bg-white rounded-lg shadow-md p-6">
+  <!-- <div class="bg-white rounded-lg shadow-md p-6">
     <h3 class="text-lg font-semibold text-gray-800 mb-4">Export Report</h3>
     <div class="flex flex-wrap gap-2">
       <app-button text="📊 Export as PDF" type="green-btn" size="lg"></app-button>
       <app-button text="📥 Export as CSV" type="green-outline" size="lg"></app-button>
       <app-button text="📧 Email Report" type="red-btn" size="lg"></app-button>
     </div>
-  </div>
+  </div> -->
 </section>

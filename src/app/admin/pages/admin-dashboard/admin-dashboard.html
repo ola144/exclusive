@@ -18,7 +18,9 @@
         </div>
         <span class="text-4xl">📋</span>
       </div>
-      <p class="text-green-600 text-xs mt-2">+12% from last month</p>
+      <p class="text-green-600 text-xs mt-2">
+        +{{ dashboardService.stats().monthlyGrowth | number: '1.2-2' }}% from last month
+      </p>
     </div>
 
     <!-- Total Revenue -->
@@ -63,7 +65,7 @@
         <span class="text-4xl">📦</span>
       </div>
       <p class="text-red-600 text-xs mt-2">
-        Low Stock: {{ dashboardService.stats().lowStockProducts }}
+        Low Stock: {{ productService.lowStockProducts().length }}
       </p>
     </div>
   </div>
@@ -205,14 +207,15 @@
           >
             <td class="px-4 py-3 font-semibold">{{ order.orderNumber }}</td>
             <td class="px-4 py-3">{{ order.customerName }}</td>
-            <td class="px-4 py-3 font-semibold">${{ order.totalAmount | number: '1.2-2' }}</td>
+            <td class="px-4 py-3 font-semibold">${{ order.total | number: '1.2-2' }}</td>
             <td class="px-4 py-3">
               <span
                 [class]="
-                  'px-3 py-1 rounded-full text-xs font-semibold ' + getStatusColor(order.status)
+                  'px-3 py-1 rounded-full text-xs font-semibold ' +
+                  getStatusColor(order.orderStatus)
                 "
               >
-                {{ order.status | uppercase }}
+                {{ order.orderStatus | uppercase }}
               </span>
             </td>
             <td class="px-4 py-3">
@@ -232,14 +235,14 @@
         <div class="bg-red-50 border border-red-200 rounded-lg p-4">
           <div class="aspect-square bg-gray-200 rounded mb-3">
             <img
-              [src]="product.image"
-              alt="{{ product.name }}"
+              [src]="productService.getImageUrl(product.productImg?.[0])"
+              alt="{{ product.productName }}"
               class="w-full h-full object-cover rounded"
             />
           </div>
-          <p class="font-semibold text-gray-800 text-sm">{{ product.name }}</p>
-          <p class="text-red-600 font-bold mt-2">Stock: {{ product.stock }}</p>
-          <p class="text-gray-600 text-xs mt-1">${{ product.price | number: '1.2-2' }}</p>
+          <p class="font-semibold text-gray-800 text-sm">{{ product.productName }}</p>
+          <p class="text-red-600 font-bold mt-2">Stock: {{ product.productInStock }}</p>
+          <p class="text-gray-600 text-xs mt-1">${{ product.productPrice | number: '1.2-2' }}</p>
         </div>
       }
     </div>

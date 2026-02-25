@@ -21,7 +21,9 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.dashboardService.refreshStats();
-    this.orderService.loadOrders();
+    this.orderService.getAllOrders();
+    this.productService.getAllProducts();
+    this.customerService.getAllCustomers();
   }
 
   getStatusColor(status: string): string {

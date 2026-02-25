@@ -14,6 +14,6 @@ export class Button {
   @Input() size: string = '';
   @Input() routerLink: any = null;
   @Input() loading: boolean = false;
-  @Input() disabled: boolean = false;
+  @Input() disabled: boolean | null = false;
   @Output() handleOnlick: EventEmitter<any> = new EventEmitter<any>();
 }

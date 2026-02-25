@@ -1,6 +1,7 @@
 import { CommonModule, NgClass } from '@angular/common';
 import {
   Component,
+  computed,
   ElementRef,
   HostListener,
   inject,
@@ -15,10 +16,14 @@ import { Subscription } from 'rxjs';
 import { Auth } from '../../services/auth';
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmLogoutPopup } from '../confirm-logout-popup/confirm-logout-popup';
+import { AdminProductService } from '../../admin/services';
+import { NotificationService } from '../../admin/services/notification.service';
+import { FormsModule } from '@angular/forms';
+import { Category } from '../../admin/services/category';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, CommonModule, NgClass, ConfirmLogoutPopup],
+  imports: [RouterLink, RouterLinkActive, CommonModule, NgClass, ConfirmLogoutPopup, FormsModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -30,6 +35,9 @@ export class Navbar implements OnInit, OnDestroy {
   masterService: Master = inject(Master);
   authService: Auth = inject(Auth);
   toastr: ToastrService = inject(ToastrService);
+  productService: AdminProductService = inject(AdminProductService);
+  notificationService: NotificationService = inject(NotificationService);
+  categoryServ: Category = inject(Category);
 
   showMobileNav = signal<boolean>(false);
   showAccountPopUp = signal<boolean>(false);
@@ -39,15 +47,29 @@ export class Navbar implements OnInit, OnDestroy {
 
   currentRoute = signal<string>('');
   confirmLogout = signal<boolean>(false);
+  userProfile = signal<any>(null);
+
+  unreadNotication = computed(() => {
+    return this.notificationService.userNotification().filter((n) => !n.userIsRead);
+  });
+
+  filterText = signal<string>('');
 
   ngOnInit(): void {
     this.currentRoute.set(this.router.url);
 
-    console.log(this.currentRoute());
-
     this.sub = this.masterService.data$.subscribe((value) => {
       this.currentRoute.set(value?.link);
     });
+
+    this.productService.initializeWishlist();
+    this.productService.initializeCart();
+    this.authService.getProfile();
+    this.authService.isLogin();
+    this.notificationService.getUserNotification();
+    this.categoryServ.getCategory();
+
+    this.filterText.set('');
   }
 
   ngOnDestroy(): void {
@@ -69,6 +91,35 @@ export class Navbar implements OnInit, OnDestroy {
     }
   }
 
+  onSearch() {
+    return this.categoryServ
+      .categories()
+      .filter((c) => c.categoryName.toLowerCase().includes(this.filterText().toLowerCase()));
+  }
+
+  onNavigateToCategory(category: string) {
+    this.masterService.setData({
+      link: `/category/${category}`,
+    });
+    this.router.navigateByUrl(`/category/${category}`);
+    this.masterService.onSearch({
+      category: category,
+    });
+
+    this.filterText.set('');
+  }
+
+  getUserProfile() {
+    this.authService
+      .getProfile()
+      .then((profile) => {
+        this.userProfile.set(profile);
+      })
+      .catch((err) => {
+        this.toastr.error('Failed to fetch user profile');
+      });
+  }
+
   toggleMobileNav() {
     this.showMobileNav.set(!this.showMobileNav());
   }
@@ -85,6 +136,24 @@ export class Navbar implements OnInit, OnDestroy {
   onNavigateToAccount(link: string) {
     this.router.navigateByUrl(link);
     this.currentRoute.set('/account');
+  }
+
+  onNavigateToMyOrder(link: string) {
+    this.router.navigate([link], { fragment: 'order' });
+    this.currentRoute.set('/account');
+
+    if (this.showMobileNav()) {
+      this.showMobileNav.set(false);
+    }
+  }
+
+  onNavigateToMyReview(link: string) {
+    this.router.navigate([link], { fragment: 'review' });
+    this.currentRoute.set('/account');
+
+    if (this.showMobileNav()) {
+      this.showMobileNav.set(false);
+    }
   }
 
   onNavigateToAccountOnMobile(link: string) {

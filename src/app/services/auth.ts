@@ -1,5 +1,4 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { IUser } from '../models';
 import { account, DATABASE_ID, databases, USERS_COLLECTION_ID } from '../core/appwrite.config';
 import { ID } from 'appwrite';
 import { ToastrService } from 'ngx-toastr';
@@ -60,19 +59,21 @@ export class Auth {
 
     this.userProfile.set(profile);
     this.isLogin();
+    await this.getProfile();
   }
 
   async getProfile() {
     const user = await account.get();
 
     // fetch role profile
-    return await databases.getDocument(DATABASE_ID, USERS_COLLECTION_ID, user.$id);
+    const res = await databases.getDocument(DATABASE_ID, USERS_COLLECTION_ID, user.$id);
+    this.userProfile.set(res);
   }
 
   async logout() {
     await account.deleteSession('current');
     this.user.set(null);
-    this.userProfile.set('null');
+    this.userProfile.set(null);
     localStorage.removeItem('exclusiveUser');
     this.isLogin();
   }
@@ -108,11 +109,15 @@ export class Auth {
 
   // Role Helpers
   isAdmin() {
-    return this.userProfile()?.role === 'admin';
+    const localData = localStorage.getItem('exclusiveUser');
+    if (localData != null) return JSON.parse(localData)?.role === 'admin';
+    return false;
   }
 
   isUser() {
-    return this.userProfile()?.role === 'user';
+    const localData = localStorage.getItem('exclusiveUser');
+    if (localData != null) return JSON.parse(localData)?.role === 'user';
+    return false;
   }
 
   isLogin() {

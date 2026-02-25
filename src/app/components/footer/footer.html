@@ -25,25 +25,30 @@
       </div>
       <div class="flex flex-col gap-3">
         <h4>Support</h4>
-        <p>111 Bijay Sarani, Dhakka, DH 1515, Bangladesh.</p>
-        <p>exclusive@gmail.com</p>
-        <p>+88015-88888-9999</p>
+        <p>{{ settingService.storeDetails()[0].address }}</p>
+        <p>{{ settingService.storeDetails()[0].email }}</p>
+        <p>{{ settingService.storeDetails()[0].phone }}</p>
       </div>
       <div class="flex flex-col gap-2">
         <h4>Account</h4>
-        <button class="button">My Account</button>
-        <button class="button">Register</button>
-        <button class="button">Login</button>
-        <button class="button">Cart</button>
-        <button class="button">Wishlist</button>
-        <button class="button">Shop</button>
+        @if (authService.isLogin()) {
+          <button (click)="onNavigateToAccount('/account')" class="button">My Account</button>
+        }
+
+        <button routerLink="/signup" class="button">Register</button>
+        <button routerLink="/login" class="button">Login</button>
+        @if (authService.isLogin()) {
+          <button routerLink="/cart" class="button">Cart</button>
+          <button routerLink="/wishlist" class="button">Wishlist</button>
+        }
+        <button routerLink="/products" class="button">Shop</button>
       </div>
       <div class="flex flex-col gap-3">
         <h4>Quick Links</h4>
-        <button class="button">Privacy Policy</button>
-        <button class="button">Terms of Use</button>
-        <button class="button">FAQ</button>
-        <button class="button">Contact</button>
+        <button class="button" routerLink="/privacy-policy">Privacy Policy</button>
+        <button class="button" routerLink="/terms-of-use">Terms of Use</button>
+        <button class="button" routerLink="/faq">FAQ</button>
+        <button routerLink="/contact" class="button">Contact</button>
       </div>
       <div class="flex flex-col gap-3">
         <h4>Download App</h4>
@@ -63,7 +68,15 @@
     </div>
   </div>
   <hr class="w-full h-0.5 bg-gray-400" />
-  <p class="text-center text-gray-400 my-2">
-    &copy; Copyright OlaTech {{ currentYear() }}. All right reserved.
-  </p>
+  <div class="flex items-center justify-between text-gray-400 my-2">
+    <p class="">&copy; Copyright OlaTech {{ currentYear() }}. All right reserved.</p>
+    <a
+      href="https://github.com/ola144/exclusive"
+      target="_blank"
+      class="hover:underline transition-all duration-200 text-sm flex gap-1 items-center"
+    >
+      <i class="fa fa-github-alt"></i>
+      View On Github</a
+    >
+  </div>
 </footer>

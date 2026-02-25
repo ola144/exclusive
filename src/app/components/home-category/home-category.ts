@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { Title } from '../title/title';
 import { Router } from '@angular/router';
 import { Master } from '../../services/master';
+import { Category } from '../../admin/services/category';
 
 @Component({
   selector: 'app-home-category',
@@ -9,47 +10,22 @@ import { Master } from '../../services/master';
   templateUrl: './home-category.html',
   styleUrl: './home-category.css',
 })
-export class HomeCategory {
+export class HomeCategory implements OnInit {
   router: Router = inject(Router);
   masterService: Master = inject(Master);
+  categoryService: Category = inject(Category);
 
-  categories = [
-    {
-      category: 'phones',
-      img: '/images/phone.png',
-      id: 'phone',
-    },
-    {
-      category: 'computers',
-      img: '/images/computer.png',
-      id: 'computer',
-    },
-    {
-      category: 'smart watch',
-      img: '/images/smartwatch.png',
-      id: 'watch',
-    },
-    {
-      category: 'camera',
-      img: '/images/camera.png',
-      id: 'camera',
-    },
-    {
-      category: 'head phone',
-      img: '/images/headset.png',
-      id: 'headphone',
-    },
-    {
-      category: 'gaming',
-      img: '/images/gaming.png',
-      id: 'gaming',
-    },
-    {
-      category: 'wears',
-      img: '/images/gaming.png',
-      id: 'wear',
-    },
-  ];
+  categories = signal<any[]>([]);
+
+  ngOnInit(): void {
+    this.getAllCategory();
+  }
+
+  getAllCategory() {
+    this.categoryService.getCategory().then((res) => {
+      this.categories.set(res.documents);
+    });
+  }
 
   onNavigateToCategory(category: string) {
     this.masterService.setData({

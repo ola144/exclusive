@@ -4,10 +4,14 @@
     <app-title [title1]="'Our Products'" [title2]="'Explore Our Products'"></app-title>
   </div>
 
-  <!-- Products -->
-  <div class="productGrid">
-    @for (product of products(); track $index) {
-      <app-product-card [product]="product" [hideDeleteBtn]="'hidden'"></app-product-card>
-    }
-  </div>
+  @if (productService.loading()) {
+    <app-loader></app-loader>
+  } @else {
+    <!-- Products -->
+    <div class="productGrid">
+      @for (product of productService.getAllProducts(); track $index) {
+        <app-product-card [product]="product" [hideDeleteBtn]="'hidden'"></app-product-card>
+      }
+    </div>
+  }
 </section>

@@ -1,0 +1,13 @@
+@import 'tailwindcss';
+
+.full-sidebar {
+  @apply w-64;
+}
+
+.full-sidebar span {
+  @apply block;
+}
+
+i {
+  font-style: normal;
+}

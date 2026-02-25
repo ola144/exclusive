@@ -2,39 +2,42 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { Master } from '../../services/master';
 import { Router } from '@angular/router';
 import { Button } from '../../components/button/button';
-import { cartItems, IProduct } from '../../models';
+import { AdminProductService } from '../../admin/services';
+import { IProduct } from '../../admin/models';
+import { Loader } from '../../components/loader/loader';
 
 @Component({
   selector: 'app-cart',
-  imports: [Button],
+  imports: [Button, Loader],
   templateUrl: './cart.html',
   styleUrl: './cart.css',
 })
 export class Cart implements OnInit {
   masterService: Master = inject(Master);
   router: Router = inject(Router);
-
-  cartItems = signal<IProduct[]>([]);
+  productService: AdminProductService = inject(AdminProductService);
 
   ngOnInit(): void {
-    this.cartItems.set(cartItems);
+    this.productService.initializeCart();
   }
 
   increaseQty(item: IProduct) {
     const cartItem = item;
     if (!cartItem) return;
 
-    this.cartItems.update((items: IProduct[]) =>
+    this.productService.cartItems.update((items: IProduct[]) =>
       items.map((p) =>
-        p.id === cartItem.id
+        p.$id === cartItem.$id
           ? {
               ...p,
-              quantity: p.quantity + 1,
-              subtotal: (p.quantity + 1) * p.price,
+              productQty: p.productQty + 1,
+              productSubtotal: (p.productQty + 1) * p.productPrice,
             }
           : p,
       ),
     );
+
+    this.productService.updateCartQuantity(cartItem.$id, cartItem.productQty + 1);
 
     this.cartTotal();
   }
@@ -43,33 +46,33 @@ export class Cart implements OnInit {
     const cartItem = item;
     if (!cartItem) return;
 
-    if (cartItem.quantity > 1) {
-      this.cartItems.update((items: IProduct[]) =>
+    if (cartItem.productQty > 1) {
+      this.productService.cartItems.update((items: IProduct[]) =>
         items.map((p) =>
-          p.id === cartItem.id
+          p.$id === cartItem.$id
             ? {
                 ...p,
-                quantity: p.quantity - 1,
-                subtotal: (p.quantity - 1) * p.price,
+                productQty: p.productQty - 1,
+                productSubtotal: (p.productQty - 1) * p.productPrice,
               }
             : p,
         ),
       );
 
+      this.productService.updateCartQuantity(cartItem.$id, cartItem.productQty - 1);
       this.cartTotal();
     }
   }
 
   cartTotal(): number {
-    const total = this.cartItems().reduce(
-      (accumulator, element) => accumulator + (element.subtotal ?? 0),
-      0,
-    );
+    const total = this.productService
+      .cartItems()
+      .reduce((accumulator, element) => accumulator + (element.productSubtotal ?? 0), 0);
     return total;
   }
 
   deleteCartItem(item: IProduct) {
-    this.cartItems.update((items) => items.filter((i) => i.id !== item.id));
+    this.productService.removeFromCart(item.$id);
   }
 
   onNavigateHome(link: string) {

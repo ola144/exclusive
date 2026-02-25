@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '../title/title';
+import { AdminProductService } from '../../admin/services';
+import { IProduct } from '../../admin/models';
+import { Router } from '@angular/router';
+import { Auth } from '../../services/auth';
 
 interface Product {
   id: number;
@@ -20,43 +24,23 @@ interface Product {
   styleUrl: './home-featured.css',
 })
 export class HomeFeatured {
-  products: Product[] = [
-    {
-      id: 1,
-      name: 'PlayStation 5',
-      category: 'Featured',
-      image: 'images/playstation.png',
-      description: 'Experience the ultimate version of the PS5 gaming with out elite.',
-      cta: 'Shop Now',
-      featured: true,
-      span: 'col-span-1 row-span-2',
-    },
-    {
-      id: 2,
-      name: "Women's Collections",
-      category: 'Featured',
-      image: 'images/women-collection.png',
-      description: 'Featured women collections that give you another vibe.',
-      cta: 'Shop Now',
-      span: 'col-span-1',
-    },
-    {
-      id: 3,
-      name: 'Speakers',
-      category: 'Featured',
-      image: '/images/speakers.png',
-      description: 'Amazon wireless speakers for you.',
-      cta: 'Shop Now',
-      span: 'col-span-1',
-    },
-    {
-      id: 4,
-      name: 'Perfume',
-      category: 'Featured',
-      image: 'images/perfume.png',
-      description: 'GUCCI INTENSE OUD EDP',
-      cta: 'Shop Now',
-      span: 'col-span-1',
-    },
-  ];
+  productService: AdminProductService = inject(AdminProductService);
+  authService: Auth = inject(Auth);
+  router: Router = inject(Router);
+
+  featuredProducts = computed(() => {
+    const items = this.productService.products().filter((p) => p.isFeatured);
+
+    return [...items] // clone array
+      .slice(0, 4); // take 1
+  });
+
+  buyNow(data: IProduct) {
+    if (this.authService.isLogin()) {
+      this.productService.addToCart(data);
+      this.router.navigateByUrl('/cart');
+    } else {
+      this.router.navigateByUrl('/login');
+    }
+  }
 }

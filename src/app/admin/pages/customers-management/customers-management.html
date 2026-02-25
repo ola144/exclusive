@@ -44,91 +44,6 @@
     </div>
   </div>
 
-  <!-- Customer Detail Modal -->
-  @if (selectedCustomer) {
-    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div class="bg-white rounded-lg max-w-2xl w-full mx-4">
-        <div class="p-6 border-b flex justify-between items-center">
-          <h2 class="text-2xl font-bold">Customer Details</h2>
-          <button
-            (click)="selectedCustomer = null"
-            class="text-gray-500 hover:text-gray-700 text-2xl"
-          >
-            ✕
-          </button>
-        </div>
-
-        <div class="p-6 space-y-4">
-          <!-- Customer Info -->
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-gray-600 text-sm">Name</p>
-              <p class="text-lg font-semibold">{{ selectedCustomer.name }}</p>
-            </div>
-            <div>
-              <p class="text-gray-600 text-sm">Email</p>
-              <p class="text-lg font-semibold">{{ selectedCustomer.email }}</p>
-            </div>
-            <div>
-              <p class="text-gray-600 text-sm">Phone</p>
-              <p class="text-lg font-semibold">{{ selectedCustomer.phoneNumber }}</p>
-            </div>
-            <div>
-              <p class="text-gray-600 text-sm">Total Orders</p>
-              <p class="text-lg font-semibold">{{ selectedCustomer.totalOrders }}</p>
-            </div>
-          </div>
-
-          <!-- Customer Stats -->
-          <div
-            class="grid grid-cols-3 gap-4 bg-linear-to-r from-blue-50 to-blue-100 rounded-lg p-4"
-          >
-            <div>
-              <p class="text-gray-600 text-sm">Total Spent</p>
-              <p class="text-2xl font-bold text-blue-600">
-                ${{ selectedCustomer.totalSpent | number: '1.2-2' }}
-              </p>
-            </div>
-            <div>
-              <p class="text-gray-600 text-sm">Total Orders</p>
-              <p class="text-2xl font-bold text-blue-600">
-                {{ selectedCustomer.totalOrders }}
-              </p>
-            </div>
-            <div>
-              <p class="text-gray-600 text-sm">Join Date</p>
-              <p class="text-lg font-bold text-blue-600">
-                {{ selectedCustomer.$createdAt | date: 'short' }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Status -->
-          <div class="bg-yellow-50 rounded-lg p-4">
-            <label class="block text-sm font-semibold text-gray-700 mb-2"> Status </label>
-            <div class="flex items-center gap-2">
-              <input
-                type="checkbox"
-                [checked]="selectedCustomer.isActive"
-                (change)="toggleCustomerStatus()"
-                class="w-4 h-4"
-              />
-              <span>{{ selectedCustomer.isActive ? 'Active' : 'Inactive' }}</span>
-            </div>
-          </div>
-
-          <!-- Close Button -->
-          <button
-            (click)="selectedCustomer = null"
-            class="w-full bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  }
-
   <!-- Customer Table -->
   <div class="bg-white rounded-lg shadow-md overflow-hidden">
     <div class="overflow-x-auto">
@@ -146,16 +61,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr
-            *ngFor="let customer of customerService.getAllCustomers()"
-            class="border-b hover:bg-gray-50"
-          >
-            <td class="px-4 py-3 font-semibold">{{ customer.name }}</td>
-            <td class="px-4 py-3">{{ customer.email }}</td>
-            <td class="px-4 py-3">{{ customer.phoneNumber }}</td>
-            <!-- <td class="px-4 py-3 text-center font-semibold">{{ customer.totalOrders }}</td> -->
-            <!-- <td class="px-4 py-3 font-semibold">${{ customer.totalSpent | number: '1.2-2' }}</td> -->
-            <!-- <td class="px-4 py-3">
+          @if (customerService.getAllCustomers().length === 0) {
+            <tr>
+              <td colspan="6" class="text-center py-4 text-gray-500">No customers found.</td>
+            </tr>
+          } @else {
+            @for (customer of customerService.getAllCustomers(); track $index) {
+              <tr class="border-b hover:bg-gray-50">
+                <td class="px-4 py-3 font-semibold">{{ customer.name }}</td>
+                <td class="px-4 py-3">{{ customer.email }}</td>
+                <td class="px-4 py-3">{{ customer.phoneNumber }}</td>
+                <!-- <td class="px-4 py-3 text-center font-semibold">{{ customer.totalOrders }}</td> -->
+                <!-- <td class="px-4 py-3 font-semibold">${{ customer.totalSpent | number: '1.2-2' }}</td> -->
+                <!-- <td class="px-4 py-3">
               <span
                 [class]="
                   customer.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -165,29 +83,108 @@
                 {{ customer.isActive ? 'Active' : 'Inactive' }}
               </span>
             </td> -->
-            <td class="px-4 py-3">{{ customer.$createdAt | date: 'short' }}</td>
-            <td class="px-4 py-3">
-              <div class="flex gap-2">
-                <button
-                  (click)="selectedCustomer = customer"
-                  class="text-blue-600 hover:text-blue-800 font-semibold"
-                >
-                  View
-                </button>
-                <button
-                  (click)="showConfirmDelete(customer.$id)"
-                  class="text-red-600 hover:text-red-800 font-semibold"
-                >
-                  Delete
-                </button>
-              </div>
-            </td>
-          </tr>
+                <td class="px-4 py-3">{{ customer.$createdAt | date: 'short' }}</td>
+                <td class="px-4 py-3">
+                  <div class="flex gap-2">
+                    <button
+                      (click)="viewCustomer(customer)"
+                      class="text-blue-600 hover:text-blue-800 font-semibold"
+                    >
+                      View
+                    </button>
+                    <button
+                      (click)="showConfirmDelete(customer.$id)"
+                      class="text-red-600 hover:text-red-800 font-semibold"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
         </tbody>
       </table>
     </div>
   </div>
 </section>
+
+<!-- Customer Detail Modal -->
+@if (selectedCustomer) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg max-w-2xl w-full mx-4">
+      <div class="p-6 border-b flex justify-between items-center">
+        <h2 class="text-2xl font-bold">Customer Details</h2>
+        <button
+          (click)="selectedCustomer = null"
+          class="text-gray-500 hover:text-gray-700 text-2xl"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <!-- Customer Info -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <p class="text-gray-600 text-sm">Name</p>
+            <p class="text-lg font-semibold">{{ selectedCustomer.name }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Email</p>
+            <p class="text-lg font-semibold">{{ selectedCustomer.email }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Phone</p>
+            <p class="text-lg font-semibold">{{ selectedCustomer.phoneNumber }}</p>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Total Orders</p>
+            <p class="text-lg font-semibold">{{ filteredOrder(selectedCustomer.$id).length }}</p>
+          </div>
+        </div>
+
+        <!-- Customer Stats -->
+        <div class="grid grid-cols-3 gap-4 bg-linear-to-r from-blue-50 to-blue-100 rounded-lg p-4">
+          <div>
+            <p class="text-gray-600 text-sm">Total Spent</p>
+            <p class="text-2xl font-bold text-blue-600">
+              ${{ customerTotalSpent(selectedCustomer.$id) | number: '1.2-2' }}
+            </p>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Total Orders</p>
+            <p class="text-2xl font-bold text-blue-600">
+              {{ filteredOrder(selectedCustomer.$id).length }}
+            </p>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Join Date</p>
+            <p class="text-lg font-bold text-blue-600">
+              {{ selectedCustomer.$createdAt | date: 'short' }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="bg-yellow-50 rounded-lg p-4">
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Status </label>
+          <div class="flex items-center gap-2">
+            <span>{{ customerIsActive() ? 'Active' : 'Inactive' }}</span>
+          </div>
+        </div>
+
+        <!-- Close Button -->
+        <button
+          (click)="selectedCustomer = null"
+          class="w-full bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+}
 
 @if (confirmDeleteCustomer()) {
   <div

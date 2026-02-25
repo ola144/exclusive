@@ -1,6 +1,6 @@
 <section class="main my-10 py-10 flex flex-col gap-8">
   <div class="flex items-center gap-3">
-    <button class="text-gray-400 cursor-pointer" routerLink="/cart">View Car</button>
+    <button class="text-gray-400 cursor-pointer" routerLink="/cart">View Cart</button>
     <span class="text-gray-400">/</span>
     <button class="text-black font-bold" disabled>Checkout</button>
   </div>
@@ -10,40 +10,72 @@
       <h2 class="font-bold">Billing Details</h2>
       <div class="space-y-8">
         <div class="input-group">
-          <input type="text" id="name" required />
+          <input
+            type="text"
+            id="name"
+            required
+            [(ngModel)]="customerName"
+            (ngModelChange)="customerName.set($event)"
+            [value]="customerName()"
+          />
           <label for="name">Your Name <span class="text-red-400">*</span></label>
         </div>
         <div class="input-group">
-          <input type="text" id="streetAddress" required />
-          <label for="streetAddress">Street Address<span class="text-red-400">*</span></label>
+          <input
+            type="text"
+            id="address"
+            required
+            [(ngModel)]="customerAddress"
+            (ngModelChange)="customerAddress.set($event)"
+            [value]="customerAddress()"
+          />
+          <label for="address">Address<span class="text-red-400">*</span></label>
         </div>
         <div class="input-group">
-          <input type="text" id="town" required />
-          <label for="town">Town/City <span class="text-red-400">*</span></label>
-        </div>
-        <div class="input-group">
-          <input type="text" id="phone" required />
+          <input
+            type="text"
+            id="phone"
+            required
+            [(ngModel)]="customerPhone"
+            (ngModelChange)="customerPhone.set($event)"
+            [value]="customerPhone()"
+          />
           <label for="phone">Phone Number <span class="text-red-400">*</span></label>
         </div>
         <div class="input-group">
-          <input type="email" id="email" required />
+          <input
+            [value]="authService.userProfile()?.email"
+            type="email"
+            id="email"
+            required
+            disabled
+          />
           <label for="email">Email Address<span class="text-red-400">*</span></label>
         </div>
         <div class="flex items-center gap-3">
-          <input type="checkbox" id="email" class="" required />
-          <label for="email">Save this infomation for faster check-out next time</label>
+          <input
+            type="checkbox"
+            id="saveInfo"
+            [checked]="saveInfo()"
+            (change)="onSaveInfoChange($event.target.checked)"
+          />
+          <label for="saveInfo">Save this infomation for faster check-out next time</label>
         </div>
       </div>
     </div>
 
     <div class="w-full space-y-3">
-      @for (item of cartItems(); track $index) {
+      @for (item of productService.cartItems(); track $index) {
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <img [src]="item.image[0]" [alt]="item.name" class="w-10 h-10" />
-            <p>{{ item.name }}</p>
+            <img
+              [src]="productService.getImageUrl(item.productImg?.[0])"
+              [alt]="item.productName"
+              class="w-10 h-10"
+            />
+            <p>{{ item.productName }}</p>
           </div>
-          <p>${{ item.subtotal }}</p>
+          <p>${{ item.productSubtotal }}</p>
         </div>
       }
       <div class="w-full space-y-6">
@@ -64,7 +96,14 @@
       <div class="space-y-4 w-full">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <input type="radio" name="payment" id="bank" />
+            <input
+              type="radio"
+              name="payment"
+              id="bank"
+              value="bank"
+              [checked]="paymentMethod() === 'bank'"
+              (change)="onPaymentMethodChange('bank')"
+            />
             <label for="bank">Bank</label>
           </div>
           <div class="flex items-center gap-1">
@@ -83,12 +122,25 @@
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <input type="radio" name="payment" id="cash" />
+          <input
+            type="radio"
+            name="payment"
+            id="cash"
+            value="cash"
+            [checked]="paymentMethod() === 'cash'"
+            (change)="onPaymentMethodChange('cash')"
+          />
           <label for="cash">Cash on delivery</label>
         </div>
       </div>
       <div class="flex justify-end">
-        <app-button text="Place Order" type="red-btn" size="md"></app-button>
+        <app-button
+          [text]="isPlacingOrder() ? 'Placing Order...' : 'Place Order'"
+          type="red-btn"
+          size="md"
+          [loading]="isPlacingOrder()"
+          (handleOnlick)="placeOrder()"
+        ></app-button>
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import {
   account,
   CATEGORY_COLLECTION_ID,
@@ -11,6 +11,8 @@ import { ID } from 'appwrite';
   providedIn: 'root',
 })
 export class Category {
+  categories = signal<any[]>([]);
+
   async addCategory(categoryName: string, categoryImg: string) {
     await databases.createDocument(DATABASE_ID, CATEGORY_COLLECTION_ID, ID.unique(), {
       categoryName: categoryName,
@@ -19,6 +21,9 @@ export class Category {
   }
 
   async getCategory() {
-    return await databases.listDocuments(DATABASE_ID, CATEGORY_COLLECTION_ID);
+    const res: any = await databases.listDocuments(DATABASE_ID, CATEGORY_COLLECTION_ID);
+
+    this.categories.set(res.documents);
+    return res.documents;
   }
 }

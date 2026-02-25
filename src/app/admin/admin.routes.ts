@@ -6,6 +6,8 @@ import { OrdersManagementComponent } from './pages/orders-management/orders-mana
 import { CustomersManagementComponent } from './pages/customers-management/customers-management';
 import { AdminSettingsComponent } from './pages/admin-settings/admin-settings';
 import { AdminReportsComponent } from './pages/admin-reports/admin-reports';
+import { AdminNotification } from './pages/admin-notification/admin-notification';
+import { Feedback } from './pages/feedback/feedback';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -43,6 +45,14 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'settings',
         component: AdminSettingsComponent,
+      },
+      {
+        path: 'notifications',
+        component: AdminNotification,
+      },
+      {
+        path: 'feedbacks',
+        component: Feedback,
       },
       {
         path: '',

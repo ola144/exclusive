@@ -4,22 +4,26 @@
     <div class="lg:col-span-2 grid grid-cols-12 gap-4">
       <!-- Thumbnails -->
       <div class="md:col-span-2 col-span-12 flex md:flex-col gap-3 w-full">
-        @for (img of foundProduct()?.image; track $index) {
+        @for (id of foundProduct()?.productImg ?? []; track $index) {
           <button
             (click)="selectImage($index)"
             class="w-fit p-1 rounded-md border border-gray-400 transition-shadow hover:shadow-md"
             [class.border-red-500]="selectedImageIndex() === $index"
           >
-            <img [src]="img" alt="thumb" class="object-cover md:w-full w-20 h-20 rounded" />
+            <img
+              [src]="productService.getImageUrl(id)"
+              alt="thumb"
+              class="object-cover md:w-full w-20 h-20 rounded"
+            />
           </button>
         }
       </div>
 
       <!-- Main Image Area -->
-      <div class="col-span-12 md:col-span-10 ">
+      <div class="col-span-12 md:col-span-10">
         <div class="relative w-full max-w-3xl">
           <img
-            [src]="foundProduct()?.image[selectedImageIndex()]"
+            [src]="productService.getImageUrl(foundProduct()?.productImg[selectedImageIndex()])"
             alt="product image"
             class="w-full h-105 object-contain bg-white rounded shadow"
           />
@@ -36,7 +40,7 @@
             (click)="nextImage()"
             aria-label="Next"
             class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow hover:bg-white disabled:cursor-no-drop"
-            [disabled]="selectedImageIndex() === foundProduct()?.image.length - 1"
+            [disabled]="selectedImageIndex() === imageUrls()?.length - 1"
           >
             ›
           </button>
@@ -46,39 +50,46 @@
 
     <!-- Details -->
     <div class="space-y-4">
-      <h3 class="font-semibold">{{ foundProduct()?.name }}</h3>
+      <h3 class="font-semibold">{{ foundProduct()?.productName }}</h3>
       <div class="flex items-center gap-3 text-sm text-gray-600">
-        <span class="text-yellow-400">{{ '★'.repeat(foundProduct()?.rating) }}</span>
-        <span class="text-gray-400">({{ foundProduct()?.reviews }} reviews)</span>
+        <div>
+          <span class="text-yellow-400">{{ '★'.repeat(averageRating(foundProduct()?.$id)) }}</span>
+          <span class="text-gray-400">{{
+            '★'.repeat(5 - averageRating(foundProduct()?.$id))
+          }}</span>
+        </div>
+        <span class="text-gray-400"
+          >({{ foundProduct()?.productReviews }}
+          {{
+            productService.getReviewsForProduct(foundProduct()?.$id).length > 1
+              ? 'reviews'
+              : 'review'
+          }})</span
+        >
         <span>|</span>
-        <span class="text-sm" [class.text-green-600]="foundProduct()?.inStock">
-          {{ foundProduct()?.inStock ? 'In stock' : 'Out of stock' }}
+        <span class="text-sm" [class.text-green-600]="foundProduct()?.productInStock">
+          {{ foundProduct()?.productInStock ? 'In stock' : 'Out of stock' }}
         </span>
       </div>
 
-      <h3 class="font-bold text-gray-900">${{ foundProduct()?.price }}</h3>
+      <h3 class="font-bold text-gray-900 flex items-center gap-1">
+        ${{
+          calculateDiscountedPrice(foundProduct()?.productPrice, foundProduct()?.productDiscount)
+        }}
+        @if (foundProduct()?.productDiscount > 0) {
+          <span class="text-gray-400 line-through text-lg"
+            >${{ foundProduct()?.productPrice }}</span
+          >
+        }
+      </h3>
 
       <p class="text-black text-justify">
-        {{ foundProduct().description }}
+        {{ foundProduct()?.productDesc }}
       </p>
 
       <hr class="w-full h-0.5 bg-gray-500 my-5" />
 
-      <!-- Colours -->
-      <!-- <div>
-        <div class="font-medium text-sm mb-2">Colours</div>
-        <div class="flex gap-3">
-          <button
-            *ngFor="let c of foundProduct()?.colours"
-            (click)="selectColour(c)"
-            [style.background]="c"
-            class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-transform transform hover:scale-105"
-            [class.ring-2]="selectedColour === c"
-          ></button>
-        </div>
-      </div> -->
-
-      <!-- Sizes -->
+      <!-- Sizes
       <div class="flex items-center gap-3">
         <h4 class="font-medium mb-2">Size:</h4>
         <div class="flex gap-2">
@@ -94,35 +105,40 @@
             </button>
           }
         </div>
-      </div>
+      </div> -->
 
       <!-- Quantity + Actions -->
-      <div class="flex items-start gap-2 mt-4">
-        <div class="flex items-center border border-gray-400 rounded-sm w-fit">
-          <button
-            (click)="decrement()"
-            class="px-3 py-2 border-r border-gray-400 hover:bg-red-500 hover:border-0 hover:text-white"
-          >
-            -
-          </button>
-          <p class="px-4 font-bold">{{ foundProduct().quantity }}</p>
-          <button
-            (click)="increment()"
-            class="px-3 py-2 border-l border-gray-400 hover:bg-red-500 hover:border-0 hover:text-white"
-          >
-            +
-          </button>
-        </div>
-        <div class="flex gap-2 items-center">
-          <app-button [text]="'Buy Now'" [type]="'red-btn'" (handleOnlick)="buyNow()"></app-button>
+      @if (authService.isLogin()) {
+        <div class="flex items-center gap-2 mt-4">
+          @if (productInCart(foundProduct()?.$id)) {
+            <app-button
+              [text]="'Proceed to Cart'"
+              [type]="'red-btn'"
+              [routerLink]="'/cart'"
+            ></app-button>
+          } @else {
+            <app-button
+              [text]="'Buy Now'"
+              [type]="'red-btn'"
+              (handleOnlick)="buyNow()"
+            ></app-button>
+          }
+
           <button
             (click)="toggleWishlist()"
             class="border border-gray-400 p-2 rounded-sm shadow cursor-pointer size-8 text-2xl flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-0 transition-colors duration-100"
           >
             <i class="fa fa-heart-o"></i>
           </button>
+          @if (authService.isLogin()) {
+            <app-button
+              [text]="'Review Product'"
+              [type]="'green-btn'"
+              (handleOnlick)="openReviewProductForm()"
+            ></app-button>
+          }
         </div>
-      </div>
+      }
 
       <!-- Delivery & Returns -->
       <div class="border border-gray-400 rounded-sm">
@@ -148,6 +164,25 @@
     </div>
   </div>
 
+  <!-- PRODUCT REVIEW -->
+
+  <div class="flex flex-col gap-2 relative">
+    <app-title [title1]="'Product Reviews'"></app-title>
+
+    @if (productService.getReviewsForProduct(foundProduct()?.$id).length === 0) {
+      <div class="flex items-center justify-center flex-col gap-2 text-[10rem]">
+        <i class="fa fa-comment text-gray-400"></i>
+        <h4 class="text-2xl font-semibold">{{ foundProduct()?.productName }} has no review.</h4>
+      </div>
+    } @else {
+      <div class="flex gap-1 relative bg-transparent" #slider>
+        @for (review of productService.getReviewsForProduct(foundProduct()?.$id); track $index) {
+          <app-review-card [review]="review"></app-review-card>
+        }
+      </div>
+    }
+  </div>
+
   <!-- Related Items -->
   <div class="flex flex-col gap-4">
     <div class="flex items-center justify-between">
@@ -159,15 +194,22 @@
     </div>
 
     @if (getRelatedProducts().length === 0) {
-      <div class="flex items-center justify-center text-red-500">
-        <p>No related items for {{ foundProduct().category }}</p>
+      <div class="flex items-center justify-center text-red-500 capitalize">
+        <p>No related items for {{ foundProduct()?.productCategory }}</p>
       </div>
     } @else {
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
         @for (product of getRelatedProducts(); track $index) {
-          <app-product-card [product]="product"></app-product-card>
+          <app-product-card [product]="product" [hideDeleteBtn]="'hidden'"></app-product-card>
         }
       </div>
     }
   </div>
 </section>
+
+@if (showReviewForm()) {
+  <app-review-product
+    [selectedProduct]="foundProduct()"
+    [showReviewProductForm]="showReviewForm"
+  ></app-review-product>
+}

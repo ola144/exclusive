@@ -15,14 +15,31 @@
           <p class="font-bold">Enter you details below</p>
         </div>
         <form action="" class="flex flex-col gap-10">
-          <input
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Email"
-            class="border-b border-b-black outline-none w-full"
-            [(ngModel)]="email"
-          />
+          <div class="w-full">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Email"
+              class="border-b border-b-black outline-none w-full"
+              [(ngModel)]="email"
+              required
+              email
+              #emailRef="ngModel"
+            />
+
+            @if (emailRef.touched && emailRef.invalid) {
+              <div class="text-red-500 text-sm">
+                @if (emailRef.errors?.['required']) {
+                  <span>Email address is required!</span>
+                }
+                @if (emailRef.errors?.['email']) {
+                  <span>Please provide a valid email address!</span>
+                }
+              </div>
+            }
+          </div>
+
           <div class="relative">
             <input
               type="password"
@@ -33,7 +50,15 @@
               [(ngModel)]="password"
               required
               #passwordRef
+              #passwordRef2="ngModel"
             />
+            @if (passwordRef2.touched && passwordRef2.invalid) {
+              <div class="text-red-500 text-sm">
+                @if (passwordRef2.errors?.['required']) {
+                  <span>Password is required!</span>
+                }
+              </div>
+            }
             @if (passwordIcons()) {
               <button class="absolute right-3 -top-0.5 text-gray-500" (click)="togglePassword()">
                 <i class="fa fa-eye-slash"></i>
@@ -52,7 +77,7 @@
               [size]="'md'"
               [loading]="loading()"
               (handleOnlick)="onLogin()"
-              [disabled]="!email || !password"
+              [disabled]="emailRef.invalid || passwordRef2.invalid"
             ></app-button>
             <a href="#" class="text-red-500 hover:underline">Forget Password?</a>
           </div>

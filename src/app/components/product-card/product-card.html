@@ -2,36 +2,59 @@
   <div class="bg-gray-400 relative">
     <div class="p-3">
       <!-- Discount Badge -->
-      @if (product.discount) {
+      @if (product.productDiscount) {
         <span class="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">
-          -{{ product.discount }}%
+          -{{ product.productDiscount }}%
         </span>
       }
-      @if (product.status) {
+      @if (product.productDiscount) {
         <span
           class="absolute bottom-12 left-3 bg-green-500 text-white text-xs px-2 py-1 rounded uppercase"
         >
-          {{ product.status }}
+          {{ product.productStatus ? 'Active' : 'Inactive' }}
         </span>
       }
 
       <!-- Wishlist and Eye ICon -->
       <div class="absolute top-3 right-3 flex flex-col gap-3">
         <div class="flex flex-col gap-3">
+          @if (productInWishlist(product.productId)) {
+            @if (authService.isLogin()) {
+              <button
+                class="bg-white p-1 rounded-full shadow cursor-pointer size-8"
+                [ngClass]="hideWishlistBtn"
+                [disabled]="productInWishlist(product.productId)"
+              >
+                <i class="fa fa-heart"></i>
+              </button>
+            }
+          } @else {
+            @if (authService.isLogin()) {
+              <button
+                (click)="addProductToWishList(product)"
+                class="bg-white p-1 rounded-full shadow cursor-pointer size-8"
+                [ngClass]="hideWishlistBtn"
+              >
+                <i class="fa fa-heart-o"></i>
+              </button>
+            }
+          }
           <button
-            (click)="toggleWishlist(product)"
             class="bg-white p-1 rounded-full shadow cursor-pointer size-8"
-            [ngClass]="hideWishlistBtn"
-          >
-            <i class="fa fa-heart-o"></i>
-          </button>
-          <button
-            class="bg-white p-1 rounded-full shadow cursor-pointer size-8"
-            [routerLink]="'/product/' + product.id"
+            [routerLink]="'/product/' + product.$id"
             [ngClass]="hideDetailsBtn"
           >
             <i class="fa fa-eye"></i>
           </button>
+
+          @if (authService.isLogin()) {
+            <button
+              class="bg-white p-1 rounded-full shadow cursor-pointer size-8 flex items-center justify-center"
+              (click)="openReviewProductForm()"
+            >
+              <i class="fa fa-comment"></i>
+            </button>
+          }
         </div>
 
         <button
@@ -45,44 +68,62 @@
 
       <!-- Image -->
       <img
-        [src]="product.image[0]"
-        [alt]="product.name"
+        [src]="productService.getImageUrl(product.productImg?.[0])"
+        [alt]="product.productName"
         class="w-full h-48 object-contain mb-4 mx-auto"
       />
     </div>
 
     <!-- Add to Cart -->
-    <button
-      (click)="addToCart(product)"
-      class="w-full bg-black text-white py-2 hover:bg-black/50 cursor-pointer"
-    >
-      Add To Cart
-    </button>
+    @if (productInCart(product.$id)) {
+      @if (authService.isLogin()) {
+        <button class="w-full bg-gray-400 text-white py-2 cursor-not-allowed" disabled>
+          Added to Cart
+        </button>
+      }
+    } @else {
+      @if (authService.isLogin()) {
+        <button
+          (click)="addToCart(product)"
+          class="w-full bg-black text-white py-2 hover:bg-black/50 cursor-pointer"
+        >
+          Add To Cart
+        </button>
+      }
+    }
   </div>
 
   <div class="flex flex-col gap-1 px-3 py-2 shadow-md border-gray-400 border border-t-0">
     <!-- Details -->
-    <h4 class="font-semibold">{{ product.name }}</h4>
+    <h4 class="font-semibold">{{ product.productName }}</h4>
 
     <div class="flex items-center gap-2">
-      <p class="text-red-400 font-bold">${{ product.price }}</p>
-      @if (product.oldPrice) {
-        <p class="line-through text-gray-400 text-sm">${{ product.oldPrice }}</p>
+      <p class="text-red-400 font-bold">
+        ${{ calculateDiscountedPrice(product.productPrice, product.productDiscount) }}
+      </p>
+      @if (product.productDiscount > 0) {
+        <p class="line-through text-gray-400 text-sm">${{ product.productPrice }}</p>
       }
     </div>
 
     <!-- Rating -->
     <div class="flex items-center gap-1 text-sm">
       <div>
-        @for (star of [].constructor(product.rating); track $index) {
-          <span class="text-yellow-400">★</span>
-        }
-        @for (star of [].constructor(5 - product.rating); track $index) {
-          <span class="text-gray-400">★</span>
-        }
+        <span class="text-yellow-400">{{ '★'.repeat(averageRating(product.$id)) }}</span>
+        <span class="text-gray-400">{{ '★'.repeat(5 - averageRating(product.$id)) }}</span>
       </div>
 
-      <span class="text-gray-500 text-xs"> ({{ product.reviews }}) </span>
+      <span class="text-gray-500 text-xs">
+        ({{ product.productReviews }}
+        {{ productService.getReviewsForProduct(product.$id).length > 1 ? 'reviews' : 'review' }})
+      </span>
     </div>
   </div>
 </div>
+
+@if (showReviewForm()) {
+  <app-review-product
+    [selectedProduct]="product"
+    [showReviewProductForm]="showReviewForm"
+  ></app-review-product>
+}

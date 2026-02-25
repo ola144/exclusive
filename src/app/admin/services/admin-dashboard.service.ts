@@ -25,7 +25,7 @@ export class AdminDashboardService {
   constructor(
     private orderService: AdminOrderService,
     private productService: AdminProductService,
-    private customerService: AdminCustomerService
+    private customerService: AdminCustomerService,
   ) {
     this.loadStats();
   }
@@ -54,14 +54,14 @@ export class AdminDashboardService {
     return this.orderService
       .getAllOrders()
       .filter((order) => {
-        const orderDate = new Date(order.createdAt);
+        const orderDate = new Date(order.createdAt ?? 0);
         return (
           orderDate.getMonth() === currentMonth &&
           orderDate.getFullYear() === currentYear &&
           order.paymentStatus === 'paid'
         );
       })
-      .reduce((sum, order) => sum + order.totalAmount, 0);
+      .reduce((sum, order) => sum + order.total, 0);
   }
 
   // Get all stats
@@ -79,10 +79,7 @@ export class AdminDashboardService {
   getRecentOrders(limit: number = 5) {
     return this.orderService
       .getAllOrders()
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
+      .sort((a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime())
       .slice(0, limit);
   }
 

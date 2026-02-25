@@ -1,23 +1,43 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { allProducts, IProduct } from '../../models';
+import {
+  AfterViewInit,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  OnInit,
+  signal,
+  ViewChild,
+  WritableSignal,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '../../components/title/title';
 import { Button } from '../../components/button/button';
 import { Master } from '../../services/master';
 import { ProductCard } from '../../components/product-card/product-card';
+import { IProduct } from '../../admin/models';
+import { AdminProductService } from '../../admin/services';
+import { Auth } from '../../services/auth';
+import { ReviewProduct } from '../../components/review-product/review-product';
+import { TinySliderInstance, tns } from 'tiny-slider';
+import { ReviewCard } from '../../components/review-card/review-card';
 
 @Component({
   selector: 'app-product-details',
-  imports: [CommonModule, Title, Button, ProductCard],
+  imports: [CommonModule, Title, Button, ProductCard, ReviewProduct, ReviewCard],
   templateUrl: './product-details.html',
   styleUrl: './product-details.css',
 })
-export class ProductDetails {
+export class ProductDetails implements OnInit, AfterViewInit {
   activeRoute: ActivatedRoute = inject(ActivatedRoute);
   masterService: Master = inject(Master);
+  productService: AdminProductService = inject(AdminProductService);
   router: Router = inject(Router);
+  authService: Auth = inject(Auth);
+
+  @ViewChild('slider') slider!: ElementRef;
+  slideInstance!: TinySliderInstance;
 
   products = signal<IProduct[]>([]);
 
@@ -25,27 +45,48 @@ export class ProductDetails {
   selectedColour: string | null = null;
   selectedSize = signal<string | null>(null);
 
+  showReviewForm: WritableSignal<boolean> = signal(false);
+
   // route param as signal
   productId = toSignal(this.activeRoute.paramMap, { initialValue: null });
 
   foundProduct = computed<IProduct | any>(() => {
-    const id = Number(this.productId()?.get('productId'));
+    const id = this.productId()?.get('productId');
 
-    return this.products().find((p) => p.id === id);
+    return this.productService.getAllProducts().find((p) => p.$id === id);
+  });
+
+  imageUrls = computed(() => {
+    const product = this.foundProduct();
+    if (!product?.productImg) return [];
+
+    return product.productImg.map((id: string) => this.productService.getImageUrl(id));
   });
 
   relatedCategoryProducts = computed<IProduct[]>(() => {
-    return this.products().filter((p) => p.category === this.foundProduct()?.category);
+    return this.products().filter(
+      (p) => p.productCategory === this.foundProduct()?.productCategory,
+    );
   });
 
   getRelatedProducts = computed<IProduct[]>(() => {
-    return this.relatedCategoryProducts().filter((p) => p.id !== this.foundProduct()?.id);
+    return this.relatedCategoryProducts().filter((p) => p.$id !== this.foundProduct()?.$id);
   });
 
-  ngOnInit() {
-    this.products.set(allProducts);
+  productInCart = (productId: string): boolean => {
+    return this.productService.cartItems().some((item) => item.productId === productId);
+  };
 
-    console.log(this.foundProduct());
+  ngOnInit() {
+    this.products.set(this.productService.getAllProducts());
+
+    this.authService.isLogin();
+    this.productService.initializeCart();
+    this.initializeSlider();
+  }
+
+  ngAfterViewInit(): void {
+    this.initializeSlider();
   }
 
   selectImage(idx: number) {
@@ -57,8 +98,10 @@ export class ProductDetails {
   }
 
   nextImage() {
-    if (this.selectedImageIndex() < this.foundProduct()?.image.length - 1)
+    const images = this.productService.getImageUrl(this.foundProduct()?.productImg);
+    if (this.selectedImageIndex() < images.length - 1) {
       this.selectedImageIndex.set(this.selectedImageIndex() + 1);
+    }
   }
 
   selectColour(col: string) {
@@ -69,48 +112,13 @@ export class ProductDetails {
     this.selectedSize.set(size);
   }
 
-  increment() {
-    const product = this.foundProduct();
-    if (!product) return;
-
-    this.products.update((item) =>
-      item.map((p) => (p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p)),
-    );
-
-  }
-
-  decrement() {
-    if (this.foundProduct().quantity > 1) {
-      const product = this.foundProduct();
-      if (!product) return;
-
-      this.products.update((item) =>
-        item.map((p) => (p.id === product.id ? { ...p, quantity: p.quantity - 1 } : p)),
-      );
-
-      // this.product.update((p) => ({
-      //   ...p,
-      //   quantity: p.quantity - 1,
-      // }));
-    }
-  }
-
-  addToCart() {
-    // console.log('Add to cart', {
-    //   product: this.product,
-    //   colour: this.selectedColour,
-    //   size: this.selectedSize,
-    // });
-    alert('Added to cart');
-  }
-
   buyNow() {
-    // console.log('Buy now', { product: this.product });
-    alert('Proceed to checkout (placeholder)');
+    this.productService.addToCart(this.foundProduct());
+    this.router.navigateByUrl('/cart');
   }
 
   toggleWishlist() {
-    console.log('Wishlist toggled for', this.foundProduct()?.id);
+    this.productService.addToWishList(this.foundProduct());
   }
 
   onNavigateToProduct(link: string) {
@@ -119,4 +127,50 @@ export class ProductDetails {
     });
     this.router.navigateByUrl(link);
   }
+
+  calculateDiscountedPrice(price: number, discount: number): number {
+    return price - (price * discount) / 100;
+  }
+
+  openReviewProductForm() {
+    this.showReviewForm.set(true);
+  }
+
+  averageRating(productId: string): number {
+    return this.productService.calculateAverageRating(productId);
+  }
+
+  initializeSlider() {
+    this.slideInstance = tns({
+      container: this.slider?.nativeElement,
+      items: 3,
+      gutter: 10,
+      slideBy: 1,
+      autoplay: false,
+      autoplayTimeout: 3000,
+      autoplayButtonOutput: false,
+
+      controls: true, // arrows
+      controlsText: ['←', '→'],
+
+      nav: true, // 👈 pagination dots
+      navPosition: 'bottom',
+
+      mouseDrag: true,
+      touch: true,
+
+      loop: true,
+
+      responsive: {
+        0: { items: 1 },
+        800: { items: 2 },
+        1024: { items: 3 },
+      },
+    });
+  }
+
+  // roundedRating = computed(() => {
+  //   const avgRating = this.averageRating(this.foundProduct()?.$id);
+  //   return Math.ceil(avgRating);
+  // });
 }

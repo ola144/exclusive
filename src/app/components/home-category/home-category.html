@@ -5,25 +5,25 @@
     </div>
 
     <div class="flex items-center justify-center w-max scroll gap-12 overflow-hidden">
-      @for (category of categories; track $index) {
+      @for (category of categoryService.categories(); track $index) {
         <button
           class="border-2 border-gray-400 rounded-xl text-center mx-auto py-5 cursor-pointer text-gray-400 hover:bg-red-500 hover:text-white hover:border-0 w-full"
-          (click)="onNavigateToCategory(category.category)"
+          (click)="onNavigateToCategory(category.categoryName)"
         >
           <div class="flex items-center flex-col gap-4 justify-center w-37.5">
-            <img [src]="category.img" [alt]="category.category" class="w-20 h-20" />
-            <h4 class="capitalize text-xl">{{ category.category }}</h4>
+            <img [src]="category.categoryImg" [alt]="category.categoryName" class="w-20 h-20" />
+            <h4 class="capitalize text-xl">{{ category.categoryName }}</h4>
           </div>
         </button>
       }
-      @for (category of categories; track $index) {
+      @for (category of categoryService.categories(); track $index) {
         <button
           class="border-2 border-gray-400 rounded-xl text-center mx-auto py-5 cursor-pointer text-gray-400 hover:bg-red-500 hover:text-white hover:border-0 w-full"
-          (click)="onNavigateToCategory(category.category)"
+          (click)="onNavigateToCategory(category.categoryName)"
         >
           <div class="flex items-center flex-col gap-4 justify-center w-37.5">
-            <img [src]="category.img" [alt]="category.category" class="w-20 h-20" />
-            <h4 class="capitalize text-xl">{{ category.category }}</h4>
+            <img [src]="category.categoryImg" [alt]="category.categoryName" class="w-20 h-20" />
+            <h4 class="capitalize text-xl">{{ category.categoryName }}</h4>
           </div>
         </button>
       }
