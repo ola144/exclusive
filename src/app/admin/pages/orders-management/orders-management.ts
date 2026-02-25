@@ -4,52 +4,66 @@ import { FormsModule } from '@angular/forms';
 import { AdminOrderService } from '../../services/admin-order.service';
 import { Order } from '../../models/admin.models';
 import { Button } from '../../../components/button/button';
+import { IOrder } from '../../../models';
+import { Loader } from '../../../components/loader/loader';
 
 @Component({
   selector: 'app-orders-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, Button],
+  imports: [CommonModule, FormsModule, Button, Loader],
   templateUrl: './orders-management.html',
 })
 export class OrdersManagementComponent implements OnInit {
   public searchTerm = '';
   public selectedStatus = '';
-  public selectedOrder: Order | null = null;
+  public selectedOrder: IOrder | null = null;
 
   constructor(public orderService: AdminOrderService) {}
 
   ngOnInit() {
     this.orderService.getAllOrders();
+    this.orderService.initializeOrderData();
   }
 
   updateOrderStatus(event: Event) {
     const value = (event.target as HTMLSelectElement).value;
     if (this.selectedOrder) {
-      this.orderService.updateOrderStatus(this.selectedOrder.id, value as Order['status']);
-      this.selectedOrder = { ...this.selectedOrder, status: value as Order['status'] };
+      this.orderService.updateOrderStatus(
+        this.selectedOrder.$id,
+        this.selectedOrder,
+        value as Order['status'],
+        this.selectedOrder.customerId,
+      );
+      this.selectedOrder = { ...this.selectedOrder, orderStatus: value as Order['status'] };
     }
   }
 
   updatePaymentStatus(event: Event) {
     const value = (event.target as HTMLSelectElement).value;
     if (this.selectedOrder) {
-      this.orderService.updatePaymentStatus(this.selectedOrder.id, value as Order['paymentStatus']);
+      this.orderService.updatePaymentStatus(
+        this.selectedOrder.$id,
+        value as IOrder['paymentStatus'],
+        this.selectedOrder,
+        this.selectedOrder.customerId,
+      );
       this.selectedOrder = {
         ...this.selectedOrder,
-        paymentStatus: value as Order['paymentStatus'],
+        paymentStatus: value as IOrder['paymentStatus'],
       };
     }
   }
 
-  updateStatus(orderId: string) {
+  updateStatus(orderId: string | undefined) {
+    if (!orderId) return;
     const order = this.orderService.getOrderById(orderId);
     if (!order) return;
 
     const statuses: Order['status'][] = ['pending', 'processing', 'shipped', 'delivered'];
-    const currentIndex = statuses.indexOf(order.status);
+    const currentIndex = statuses.indexOf(order.orderStatus);
     if (currentIndex < statuses.length - 1) {
       const nextStatus = statuses[currentIndex + 1];
-      this.orderService.updateOrderStatus(orderId, nextStatus);
+      this.orderService.updateOrderStatus(orderId, order, nextStatus, order.customerId);
     }
   }
 
@@ -85,10 +99,10 @@ export class OrdersManagementComponent implements OnInit {
       ...orders.map((o) => [
         o.orderNumber,
         o.customerName,
-        o.totalAmount,
-        o.status,
+        o.total,
+        o.orderStatus,
         o.paymentStatus,
-        new Date(o.createdAt).toLocaleDateString(),
+        o.createdAt ? new Date(o.createdAt).toLocaleDateString() : '',
       ]),
     ]
       .map((row) => row.join(','))

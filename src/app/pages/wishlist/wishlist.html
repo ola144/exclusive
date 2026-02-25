@@ -1,25 +1,37 @@
 <section class="main my-10 py-10 flex flex-col gap-20">
   <div class="w-full space-y-6">
     <div class="flex items-center justify-between">
-      <h4>Wishlist ({{ wishList().length }})</h4>
+      <h4>Wishlist ({{ productService.wishlistItems().length }})</h4>
     </div>
-    <div class="productGrid">
-      @for (item of wishList(); track $index) {
-        <app-product-card
-          [product]="item"
-          [hideWishlistBtn]="'hidden'"
-          [hideDetailsBtn]="'hidden'"
-          [hideDeleteBtn]="'flex'"
-          (deleteWishListItem)="deleteWishListItem(item)"
-        ></app-product-card>
+
+    @if (productService.loading()) {
+      <app-loader></app-loader>
+    } @else {
+      @if (productService.wishlistItems().length === 0) {
+        <div class="flex items-center justify-center flex-col gap-2 text-[10rem]">
+          <i class="fa fa-heart-o text-gray-400"></i>
+          <h4 class="text-2xl font-semibold text-gray-400">Your Wishlist is Empty</h4>
+        </div>
+      } @else {
+        <div class="productGrid">
+          @for (item of productService.wishlistItems(); track $index) {
+            <app-product-card
+              [product]="item"
+              [hideWishlistBtn]="'hidden'"
+              [hideDetailsBtn]="'hidden'"
+              [hideDeleteBtn]="'flex'"
+              (deleteWishListItem)="deleteWishListItem(item)"
+            ></app-product-card>
+          }
+        </div>
       }
-    </div>
+    }
   </div>
 
   <div class="w-full space-y-6">
     <div class="flex items-center justify-between">
       <app-title title2="Just For You" title1="Take A Look"></app-title>
-      <app-button text="See All" size="md"></app-button>
+      <app-button text="See All" size="md" [routerLink]="'/products'"></app-button>
     </div>
     <div class="productGrid">
       @for (item of justForYou(); track $index) {

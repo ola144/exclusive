@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+.notification:hover .actions {
+  @apply block;
+}
+
+.actions {
+  @apply hidden transition-all duration-200;
+}

@@ -13,8 +13,30 @@ body {
   width: 100% !important;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px rgb(215, 215, 215);
+  border-radius: 10px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: black;
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: black;
+}
+
 @utility main {
-  @apply xl:w-[80%] lg:w-[90%] md:w-[90%] mx-auto xl:px-0 md:px-5 px-10 sm:w-[100%];
+  @apply xl:w-[80%] lg:w-[90%] md:w-[90%] mx-auto xl:px-0 md:px-5 px-10 sm:w-full;
 }
 
 @utility active {
@@ -51,7 +73,7 @@ button {
 
 .input-group input,
 .input-group textarea {
-  @apply outline-none border-none w-full;
+  @apply outline-none border-none w-full disabled:cursor-not-allowed;
 }
 
 .input-group label {
@@ -64,7 +86,8 @@ button {
 .input-group input:focus + label,
 .input-group input:valid + label,
 .input-group textarea:focus + label,
-.input-group textarea:valid + label {
+.input-group textarea:valid + label,
+.input-group input:disabled + label {
   @apply top-0 text-[10px] bg-red-500 px-2 py-1 text-white rounded-sm;
 }
 

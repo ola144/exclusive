@@ -1,6 +1,7 @@
 import {
   AfterViewInit,
   Component,
+  computed,
   ElementRef,
   inject,
   OnDestroy,
@@ -12,10 +13,10 @@ import { Button } from '../button/button';
 import { CommonModule } from '@angular/common';
 import { Title } from '../title/title';
 import { ProductCard } from '../product-card/product-card';
-import { products } from '../../models';
 import { TinySliderInstance, tns } from 'tiny-slider';
 import { Master } from '../../services/master';
 import { Router } from '@angular/router';
+import { AdminProductService } from '../../admin/services';
 
 @Component({
   selector: 'app-flash-sales',
@@ -24,10 +25,19 @@ import { Router } from '@angular/router';
   styleUrl: './flash-sales.css',
 })
 export class FlashSales implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('slider', { static: true }) slider!: ElementRef;
+  @ViewChild('slider') slider!: ElementRef;
 
   masterService: Master = inject(Master);
+  productService: AdminProductService = inject(AdminProductService);
   router: Router = inject(Router);
+
+  flashSales = computed(() => {
+    const items = this.productService.products();
+
+    return [...items] // clone array
+      .sort(() => Math.random() - 0.5) // shuffle
+      .slice(0, 4); // take 4
+  });
 
   title1: string = "Today's";
 
@@ -44,13 +54,23 @@ export class FlashSales implements OnInit, OnDestroy, AfterViewInit {
   private timer: any;
 
   ngOnInit() {
-    this.products = products;
+    this.productService.initializeData();
     this.startCountdown();
+    this.initializeSlider();
   }
 
   ngAfterViewInit(): void {
+    this.initializeSlider();
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.timer);
+    this.slideInstance?.destroy();
+  }
+
+  initializeSlider() {
     this.slideInstance = tns({
-      container: this.slider.nativeElement,
+      container: this.slider?.nativeElement,
       items: 3,
       gutter: 10,
       slideBy: 1,
@@ -75,10 +95,6 @@ export class FlashSales implements OnInit, OnDestroy, AfterViewInit {
         1024: { items: 3 },
       },
     });
-  }
-
-  ngOnDestroy() {
-    clearInterval(this.timer);
   }
 
   startCountdown() {

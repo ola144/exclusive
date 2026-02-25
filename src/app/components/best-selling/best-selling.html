@@ -12,7 +12,7 @@
 
     <!-- Products -->
     <div class="productGrid">
-      @for (product of products; track $index) {
+      @for (product of bestSelling(); track $index) {
         <app-product-card [product]="product" [hideDeleteBtn]="'hidden'"></app-product-card>
       }
     </div>

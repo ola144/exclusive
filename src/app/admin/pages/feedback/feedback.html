@@ -1,0 +1,45 @@
+<section class="py-10 my-1 flex flex-col gap-3">
+  <div class="flex justify-between items-center">
+    <h3 class="font-bold">Feedbacks</h3>
+  </div>
+  <div class="">
+    @if (masterServ.messages().length === 0) {
+      <div class="flex items-center justify-center flex-col gap-2 text-[5rem]">
+        <i>💬</i>
+        <h4 class="text-2xl font-semibold">There is no feedback yet!</h4>
+      </div>
+    } @else {
+      <div class="grid md:grid-cols-2 grid-cols-1 gap-x-2 gap-y-3">
+        @for (item of masterServ.messages(); track $index) {
+          <div class="py-1 px-2 my-1 border-y border-gray-400 w-full relative bg-white font-normal">
+            <div class="flex flex-col gap-1">
+              <h5 class="flex items-start gap-1 text-justify">
+                <span class="font-bold">Name: </span>
+                {{ item.name }}
+              </h5>
+              <p class="flex items-start gap-1 text-justify">
+                <span class="font-bold">Email: </span>
+                {{ item.email }}
+              </p>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex flex-col gap-1">
+                <h5 class="flex items-start gap-1">
+                  <span class="font-bold capitalize">Subject: </span>
+                  {{ item.subject }}
+                </h5>
+                <p class="flex items-start gap-1 text-justify">
+                  <span class="font-bold">Message: </span>
+                  {{ item.message }}
+                </p>
+              </div>
+              <div class="absolute top-1 right-1">
+                <p>{{ item.$createdAt | date: 'short' }}</p>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

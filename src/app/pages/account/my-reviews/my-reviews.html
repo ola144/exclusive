@@ -1,0 +1,18 @@
+<!-- My Reviews Component HTML -->
+<section class="flex flex-col gap-6">
+  <h5 class="text-3xl font-bold mb-6">My Reviews</h5>
+  @if (productService.loading()) {
+    <app-loader></app-loader>
+  } @else {
+    @if (productService.productReviews().length === 0) {
+      <div class="flex items-center justify-center flex-col gap-2 text-[10rem]">
+        <i class="fa fa-comment text-gray-400"></i>
+        <h4 class="text-2xl font-semibold">You haven't written any reviews yet.</h4>
+      </div>
+    } @else {
+      @for (review of productService.productReviews(); track $index) {
+        <app-review-card [review]="review"></app-review-card>
+      }
+    }
+  }
+</section>

@@ -36,7 +36,7 @@
         (change)="productService.setCategory(selectedCategory)"
         class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 capitalize"
       >
-        <option value="">Select Category</option>
+        <option value="">All Category</option>
         @for (item of categories(); track $index) {
           <option [value]="item.categoryName">{{ item.categoryName }}</option>
         }
@@ -65,70 +65,88 @@
             <th class="px-4 py-3 text-left">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          @for (product of productService.getAllProducts(); track $index) {
-            <tr class="border-b hover:bg-gray-50">
-              <td class="px-4 py-3">
-                <div class="flex items-center space-x-3">
-                  <img
-                    [src]="product.image"
-                    alt="{{ product.name }}"
-                    class="w-10 h-10 object-cover rounded"
-                  />
-                  <div>
-                    <p class="font-semibold">{{ product.name }}</p>
-                    <p class="text-gray-500 text-xs">ID: {{ product.id }}</p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3">{{ product.category }}</td>
-              <td class="px-4 py-3 font-semibold">${{ product.price | number: '1.2-2' }}</td>
-              <td class="px-4 py-3">
-                <span [class]="getStockColor(product.stock)">
-                  {{ product.stock }}
-                </span>
-              </td>
-              <td class="px-4 py-3">
-                @if (product.discount) {
-                  <span
-                    class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-semibold"
-                  >
-                    {{ product.discount }}%
-                  </span>
-                }
-                @if (!product.discount) {
-                  <span class="text-gray-500">-</span>
-                }
-              </td>
-              <td class="px-4 py-3">
-                <span
-                  [class]="
-                    product.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  "
-                  class="px-3 py-1 rounded-full text-xs font-semibold"
-                >
-                  {{ product.isActive ? 'Active' : 'Inactive' }}
-                </span>
-              </td>
-              <td class="px-4 py-3">
-                <div class="flex gap-2">
-                  <button
-                    (click)="editProduct(product)"
-                    class="text-blue-600 hover:text-blue-800 font-semibold"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    (click)="deleteProduct(product.id)"
-                    class="text-red-600 hover:text-red-800 font-semibold"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
+        @if (productService.loading()) {
+          <tr>
+            <td colspan="6" class="text-center py-4">
+              <app-loader></app-loader>
+            </td>
+          </tr>
+        } @else {
+          <tbody>
+            @if (productService.getAllProducts().length === 0) {
+              <tr>
+                <td colspan="8" class="text-center py-6 text-gray-500">No products found.</td>
+              </tr>
+            } @else {
+              @for (product of productService.getAllProducts(); track $index) {
+                <tr class="border-b hover:bg-gray-50">
+                  <td class="px-4 py-3">
+                    <div class="flex items-center space-x-2">
+                      <img
+                        [src]="productService.getImageUrl(product.productImg?.[0])"
+                        alt="{{ product.productName }}"
+                        class="w-10 h-10 object-cover rounded"
+                      />
+
+                      <div>
+                        <p class="font-semibold capitalize">{{ product.productName }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 capitalize">{{ product.productCategory }}</td>
+                  <td class="px-4 py-3 font-semibold">
+                    ${{ product.productPrice | number: '1.2-2' }}
+                  </td>
+                  <td class="px-4 py-3">
+                    <span [class]="getStockColor(product.productInStock)">
+                      {{ product.productInStock }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3">
+                    @if (product.productDiscount) {
+                      <span
+                        class="bg-orange-100 text-orange-800 px-2 py-1 rounded text-xs font-semibold"
+                      >
+                        {{ product.productDiscount }}%
+                      </span>
+                    }
+                    @if (!product.productDiscount) {
+                      <span class="text-gray-500">-</span>
+                    }
+                  </td>
+                  <td class="px-4 py-3">
+                    <span
+                      [class]="
+                        product.productStatus
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
+                      "
+                      class="px-3 py-1 rounded-full text-xs font-semibold"
+                    >
+                      {{ product.productStatus ? 'Active' : 'Inactive' }}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3">
+                    <div class="flex gap-2">
+                      <button
+                        (click)="editProduct(product)"
+                        class="text-blue-600 hover:text-blue-800 font-semibold"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        (click)="openDeleteConfirm(product)"
+                        class="text-red-600 hover:text-red-800 font-semibold"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        }
       </table>
     </div>
   </div>
@@ -145,14 +163,15 @@
         <button (click)="closeForm()" class="text-gray-500 hover:text-gray-700 text-2xl">✕</button>
       </div>
 
-      <form (ngSubmit)="saveProduct()" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2"> Product Name * </label>
           <input
             type="text"
-            [(ngModel)]="formData.name"
+            [(ngModel)]="formData.productName"
             name="name"
             required
+            #productName="ngModel"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -160,16 +179,16 @@
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2"> Category * </label>
           <select
-            [(ngModel)]="formData.category"
+            [(ngModel)]="formData.productCategory"
             name="category"
             required
-            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            #productCat="ngModel"
+            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 capitalize"
           >
             <option value="">Select Category</option>
-            <option value="Electronics">Electronics</option>
-            <option value="Fashion">Fashion</option>
-            <option value="Home">Home</option>
-            <option value="Books">Books</option>
+            @for (item of categoryService.categories(); track $index) {
+              <option [value]="item.categoryName">{{ item.categoryName }}</option>
+            }
           </select>
         </div>
 
@@ -177,15 +196,16 @@
           <label class="block text-sm font-semibold text-gray-700 mb-2"> Price * </label>
           <input
             type="number"
-            [(ngModel)]="formData.price"
+            [(ngModel)]="formData.productPrice"
             name="price"
             step="0.01"
             required
+            #productPrice="ngModel"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        <div>
+        <!-- <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2"> Original Price </label>
           <input
             type="number"
@@ -194,15 +214,16 @@
             step="0.01"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </div>
+        </div> -->
 
         <div>
           <label class="block text-sm font-semibold text-gray-700 mb-2"> Stock * </label>
           <input
             type="number"
-            [(ngModel)]="formData.stock"
+            [(ngModel)]="formData.productInStock"
             name="stock"
             required
+            #productInStock="ngModel"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -211,7 +232,7 @@
           <label class="block text-sm font-semibold text-gray-700 mb-2"> Discount (%) </label>
           <input
             type="number"
-            [(ngModel)]="formData.discount"
+            [(ngModel)]="formData.productDiscount"
             name="discount"
             min="0"
             max="100"
@@ -222,49 +243,92 @@
         <div class="md:col-span-2">
           <label class="block text-sm font-semibold text-gray-700 mb-2"> Description * </label>
           <textarea
-            [(ngModel)]="formData.description"
+            [(ngModel)]="formData.productDesc"
             name="description"
             required
+            #productDescription="ngModel"
             rows="4"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           ></textarea>
         </div>
 
         <div class="md:col-span-2">
-          <label class="block text-sm font-semibold text-gray-700 mb-2"> Image URL * </label>
+          <label class="block text-sm font-semibold text-gray-700 mb-2"> Images * </label>
           <input
-            type="url"
-            [(ngModel)]="formData.image"
-            name="image"
+            type="file"
             required
+            multiple
+            (change)="onFiles($event)"
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <div class="mt-2" *ngIf="formData.image">
-            <img [src]="formData.image" alt="Preview" class="w-32 h-32 object-cover rounded" />
-          </div>
+          @if (imagePreviews) {
+            <div class="mt-2 flex items-center gap-1">
+              @for (item of imagePreviews; track $index) {
+                <img [src]="item" alt="Preview" class="w-32 h-32 object-cover rounded" />
+              }
+            </div>
+          }
+        </div>
+
+        <div class="flex items-center gap-1">
+          <input
+            type="checkbox"
+            [(ngModel)]="formData.isFeatured"
+            name="featured"
+            id="featured"
+            class="w-fit"
+          />
+          <label class="text-sm font-semibold text-gray-700" for="featured">
+            Check if it's featured product.
+          </label>
         </div>
 
         <div class="md:col-span-2 flex gap-2">
-          <button
-            type="submit"
-            class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            {{ editingProduct ? 'Update Product' : 'Add Product' }}
-          </button>
-          <button
-            type="button"
-            (click)="closeForm()"
-            class="flex-1 bg-gray-400 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition"
-          >
-            Cancel
-          </button>
+          @if (!editingProduct) {
+            <app-button
+              text="Add Product"
+              type="green-btn"
+              size="md"
+              [disabled]="
+                productName.invalid ||
+                productCat.invalid ||
+                productPrice.value === 0 ||
+                productInStock.value === 0 ||
+                productDescription.invalid ||
+                selectedImgFiles.length === 0
+              "
+              [loading]="loading()"
+              (handleOnlick)="saveProduct()"
+            ></app-button>
+          } @else {
+            <app-button
+              text="Update Product"
+              type="green-btn"
+              size="md"
+              [disabled]="
+                productName.invalid ||
+                productCat.invalid ||
+                productPrice.value === 0 ||
+                productInStock.value === 0 ||
+                productDescription.invalid ||
+                selectedImgFiles.length === 0
+              "
+              (handleOnlick)="updateProduct()"
+            ></app-button>
+          }
+          <app-button
+            text="Cancel"
+            type="gray-btn"
+            size="md"
+            (handleOnlick)="closeForm()"
+          ></app-button>
         </div>
       </form>
     </div>
   </div>
 }
 
-<!-- Add/Edit Product Form -->
+<!-- Add/Edit Category Form -->
 @if (showAddCategoryForm()) {
   <div class="bg-black/50 w-full h-full flex items-center justify-center fixed inset-0 z-900 px-10">
     <div class="bg-white rounded-lg shadow-md p-6 w-140 h-80 max-w-full overflow-y-auto">
@@ -287,6 +351,7 @@
             name="categoryName"
             required
             class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            #category="ngModel"
           />
         </div>
 
@@ -314,6 +379,7 @@
             text="Add Category"
             type="green-btn"
             size="md"
+            [disabled]="category.invalid || !this.imagePreview()"
             [loading]="loading()"
             (handleOnlick)="addCategory()"
           ></app-button>
@@ -325,6 +391,35 @@
           ></app-button>
         </div>
       </form>
+    </div>
+  </div>
+}
+
+<!-- Confirm Delete Product -->
+@if (confirmDeleteProduct()) {
+  <div
+    class="fixed inset-0 bg-black/50 h-screen w-full flex items-center justify-center z-900"
+    data-aos="fade-in"
+  >
+    <div
+      class="bg-white w-4/5 max-w-2xl rounded-md p-4 text-center flex flex-col justify-center gap-2 h-60"
+    >
+      <p class="text-black">Are you sure want to delete this product?</p>
+      <div class="flex items-center justify-center gap-2">
+        <app-button
+          text="Cancel"
+          type="gray-btn"
+          size="md"
+          (handleOnlick)="confirmDeleteProduct.set(false)"
+        ></app-button>
+        <app-button
+          text="Delete"
+          type="red-btn"
+          size="md"
+          [loading]="loading()"
+          (handleOnlick)="deleteProduct()"
+        ></app-button>
+      </div>
     </div>
   </div>
 }

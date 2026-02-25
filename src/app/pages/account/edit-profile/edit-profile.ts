@@ -16,7 +16,7 @@ export class EditProfile implements OnInit {
   authService: Auth = inject(Auth);
   router: Router = inject(Router);
   toastr: ToastrService = inject(ToastrService);
-  imageComress: NgxImageCompressService = inject(NgxImageCompressService);
+  imageCompress: NgxImageCompressService = inject(NgxImageCompressService);
 
   password: string = '';
   name: string = '';
@@ -28,7 +28,6 @@ export class EditProfile implements OnInit {
   newPasswordIcons = signal<boolean>(false);
   confirmNewPasswordIcons = signal<boolean>(false);
 
-  userProfile = signal<any>(null);
   imagePreview = signal<string>('');
   loading = signal<boolean>(false);
 
@@ -37,28 +36,17 @@ export class EditProfile implements OnInit {
   @ViewChild('confirmNewPassword') confirmNewPassword!: ElementRef<HTMLInputElement>;
 
   ngOnInit(): void {
-    this.getProfile();
-  }
-
-  getProfile() {
-    this.authService.getProfile().then((res: any) => {
-      this.userProfile.set(res);
-      console.log(res);
-
-      const profile = res;
-
-      this.imagePreview.set(profile?.avatar);
-      this.name = profile?.name;
-      this.address = profile?.address;
-      this.phoneNumber = profile?.phoneNumber;
-      this.oldPassword = profile?.password;
-    });
+    this.name = this.authService.userProfile()?.name;
+    this.address = this.authService.userProfile()?.address;
+    this.phoneNumber = this.authService.userProfile()?.phoneNumber;
+    this.oldPassword = this.authService.userProfile()?.password;
+    this.imagePreview.set(this.authService.userProfile()?.avatar);
   }
 
   compress() {
     const MAX_MEGABYTE = 2;
 
-    this.imageComress
+    this.imageCompress
       .uploadAndGetImageWithMaxSize(MAX_MEGABYTE)
       .then((result: string) => {
         this.imagePreview.set(result);
@@ -73,7 +61,7 @@ export class EditProfile implements OnInit {
     this.loading.set(true);
     this.authService
       .updateProfile(
-        this.userProfile().$id,
+        this.authService.userProfile()?.$id,
         this.password,
         this.name,
         this.phoneNumber,

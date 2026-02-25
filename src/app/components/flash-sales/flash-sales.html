@@ -32,7 +32,7 @@
 
     <!-- Products -->
     <div class="flex gap-1 relative bg-transparent" #slider>
-      @for (product of products; track $index) {
+      @for (product of flashSales(); track $index) {
         <app-product-card [product]="product" [hideDeleteBtn]="'hidden'"></app-product-card>
       }
     </div>

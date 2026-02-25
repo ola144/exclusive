@@ -2,16 +2,17 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminProductService } from '../../services/admin-product.service';
-import { Product } from '../../models/admin.models';
+import { IProduct, Product } from '../../models/admin.models';
 import { Button } from '../../../components/button/button';
 import { Category } from '../../services/category';
 import { ToastrService } from 'ngx-toastr';
 import { NgxImageCompressService } from 'ngx-image-compress';
+import { Loader } from '../../../components/loader/loader';
 
 @Component({
   selector: 'app-products-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, Button],
+  imports: [CommonModule, FormsModule, Button, Loader],
   templateUrl: 'products-management.html',
 })
 export class ProductsManagementComponent implements OnInit {
@@ -20,11 +21,13 @@ export class ProductsManagementComponent implements OnInit {
   imageCompress: NgxImageCompressService = inject(NgxImageCompressService);
 
   public showAddForm = false;
-  public editingProduct: Product | null = null;
+  public editingProduct: IProduct | null = null;
+  public deletingProduct: IProduct | null = null;
   public searchTerm = '';
   public selectedCategory = '';
 
   showAddCategoryForm = signal<boolean>(false);
+  confirmDeleteProduct = signal<boolean>(false);
   loading = signal<boolean>(false);
 
   categories = signal<any[]>([]);
@@ -32,23 +35,36 @@ export class ProductsManagementComponent implements OnInit {
 
   categoryName: string = '';
 
-  public formData: Partial<Product> = {
-    name: '',
-    description: '',
-    price: 0,
-    originalPrice: 0,
-    discount: 0,
-    category: '',
-    stock: 0,
-    image: '',
-    isActive: true,
+  public formData: IProduct = {
+    productName: '',
+    productDesc: '',
+    productPrice: 0,
+    productDiscount: 0,
+    productStatus: true,
+    productRating: 0,
+    productReviews: 0,
+    productCategory: '',
+    productQty: 1,
+    productInStock: 0,
+    isFeatured: false,
   };
+
+  selectedImgFiles: File[] = [];
+  imagePreviews: File[] = [];
 
   constructor(public productService: AdminProductService) {}
 
   ngOnInit() {
     this.productService.getAllProducts();
     this.getAllCategory();
+  }
+
+  onFiles(event: any) {
+    const files: any = Array.from(event.target.files);
+
+    this.selectedImgFiles = files;
+
+    this.imagePreviews = files.map((file: any) => URL.createObjectURL(file));
   }
 
   compressImg() {
@@ -95,46 +111,105 @@ export class ProductsManagementComponent implements OnInit {
   }
 
   saveProduct() {
-    if (!this.formData.name || !this.formData.price || !this.formData.stock) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
-    if (this.editingProduct) {
-      this.productService.updateProduct(this.editingProduct.id, this.formData as Product);
-    } else {
-      this.productService.addProduct(this.formData as Omit<Product, 'id'>);
-    }
-
-    this.closeForm();
+    this.loading.set(true);
+    this.productService
+      .addProduct(
+        this.formData,
+        this.selectedImgFiles,
+        this.formData.productPrice * this.formData.productQty,
+      )
+      .then(() => {
+        this.toastr.success('Product Added Successfully');
+        this.productService.getAllProducts();
+        this.closeForm();
+      })
+      .catch((error) => {
+        this.toastr.error(error);
+      })
+      .finally(() => {
+        this.loading.set(false);
+      });
   }
 
-  editProduct(product: Product) {
+  updateProduct() {
+    if (!this.editingProduct?.$id) {
+      this.toastr.error('Product ID is missing');
+      return;
+    }
+    this.loading.set(true);
+    this.productService
+      .updateProduct(
+        this.editingProduct.$id,
+        this.formData,
+        this.editingProduct?.productImg,
+        this.selectedImgFiles,
+        this.formData.productPrice * this.formData.productQty,
+      )
+      .then(() => {
+        this.toastr.success('Product Updated Successfully');
+        this.productService.getAllProducts();
+        this.closeForm();
+      })
+      .catch((error) => {
+        this.toastr.error(error);
+      })
+      .finally(() => {
+        this.loading.set(false);
+      });
+  }
+
+  editProduct(product: IProduct) {
     this.editingProduct = product;
     this.formData = { ...product };
     this.showAddForm = true;
   }
 
-  deleteProduct(id: string) {
-    if (confirm('Are you sure you want to delete this product?')) {
-      this.productService.deleteProduct(id);
+  openDeleteConfirm(product: IProduct) {
+    this.deletingProduct = product;
+    this.confirmDeleteProduct.set(true);
+  }
+
+  deleteProduct() {
+    if (!this.deletingProduct?.$id) {
+      this.toastr.error('Product ID is missing');
+      return;
     }
+
+    this.loading.set(true);
+    this.productService
+      .deleteProduct(this.deletingProduct.$id, this.deletingProduct?.productImg)
+      .then(() => {
+        this.toastr.success('Product Deleted Successfully');
+        this.productService.getAllProducts();
+        this.confirmDeleteProduct.set(false);
+      })
+      .catch((error) => {
+        this.toastr.error(error);
+      })
+      .finally(() => {
+        this.loading.set(false);
+      });
   }
 
   closeForm() {
     this.showAddForm = false;
     this.editingProduct = null;
     this.formData = {
-      name: '',
-      description: '',
-      price: 0,
-      originalPrice: 0,
-      discount: 0,
-      category: '',
-      stock: 0,
-      image: '',
-      isActive: true,
+      productName: '',
+      productDesc: '',
+      productPrice: 0,
+      productDiscount: 0,
+      productCategory: '',
+      productInStock: 0,
+      productStatus: true,
+      productQty: 0,
+      productRating: 0,
+      productReviews: 0,
+      productSubtotal: 0,
+      isFeatured: false,
     };
+    this.selectedImgFiles = [];
+    this.imagePreviews = [];
   }
 
   getStockColor(stock: number): string {
@@ -147,7 +222,14 @@ export class ProductsManagementComponent implements OnInit {
     const products = this.productService.getAllProducts();
     const csv = [
       ['ID', 'Name', 'Category', 'Price', 'Stock', 'Discount'],
-      ...products.map((p) => [p.id, p.name, p.category, p.price, p.stock, p.discount || '']),
+      ...products.map((p) => [
+        p.$id,
+        p.productName,
+        p.productCategory,
+        p.productPrice,
+        p.productInStock,
+        p.productDiscount || '',
+      ]),
     ]
       .map((row) => row.join(','))
       .join('\n');

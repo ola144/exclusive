@@ -37,22 +37,59 @@
         }
       </ul>
       <div class="flex items-center gap-5 relative">
-        <div
-          class="flex items-center justify-between gap-3 bg-gray-200 text-gray-900 py-2 px-5 rounded-xl h-10 text-sm"
-        >
-          <input
-            type="text"
-            placeholder="What are you looking for?"
-            class="w-full border-none outline-none"
-          />
-          <i class="fa fa-search"></i>
+        <div class="bg-gray-200 text-gray-900 py-2 px-5 rounded-xl h-10 text-sm relative">
+          <div class="flex items-center justify-between gap-3">
+            <input
+              type="text"
+              placeholder="What are you looking for?"
+              class="w-full border-none outline-none"
+              [(ngModel)]="filterText"
+              (input)="onSearch()"
+            />
+            <i class="fa fa-search"></i>
+          </div>
+
+          @if (onSearch().length && filterText()) {
+            <div class="w-full bg-gray-300 p-1 border border-gray-500 mt-3">
+              @for (item of onSearch(); track $index) {
+                <button
+                  class="flex items-center gap-2 capitalize"
+                  (click)="onNavigateToCategory(item.categoryName)"
+                >
+                  <img [src]="item?.categoryImg" [alt]="item?.categoryName" class="w-10 h-10" />
+                  <span>{{ item?.categoryName }}</span>
+                </button>
+              }
+            </div>
+          }
         </div>
         @if (authService.isLogin()) {
-          <button class="cursor-pointer text-lg" (click)="onNavigate('/wishlist')">
+          <button class="cursor-pointer text-lg relative" (click)="onNavigate('/wishlist')">
             <i class="fa fa-heart-o"></i>
+            <span
+              class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+            >
+              {{ productService.wishlistItems().length }}
+            </span>
           </button>
-          <button class="cursor-pointer text-lg text-black" (click)="onNavigate('/cart')">
+          <button class="cursor-pointer relative text-lg text-black" (click)="onNavigate('/cart')">
             <i class="fa fa-shopping-cart"></i>
+            <span
+              class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+            >
+              {{ productService.cartItems().length }}
+            </span>
+          </button>
+          <button
+            class="cursor-pointer relative text-lg text-black"
+            (click)="onNavigate('/notifications')"
+          >
+            <i class="fa fa-bell"></i>
+            <span
+              class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+            >
+              {{ unreadNotication().length }}
+            </span>
           </button>
           <a
             class="cursor-pointer text-lg rounded-full size-8 flex items-center justify-center"
@@ -63,7 +100,20 @@
             "
             (click)="toggleAccountPopUp()"
           >
-            <i class="fa fa-user-o"></i>
+            @if (authService.userProfile()?.avatar) {
+              <img
+                [src]="authService.userProfile()?.avatar || ''"
+                alt="User Avatar"
+                class="rounded-full w-8 h-8 object-cover"
+              />
+            } @else {
+              <span
+                class="size-8 rounded-full flex text-gray-600 bg-gray-50 border-gray-600 border uppercase items-center justify-center"
+              >
+                {{ authService.userProfile()?.name.split()[0][0] }}
+              </span>
+            }
+            <!-- <i class="fa fa-user-o"></i> -->
           </a>
 
           @if (showAccountPopUp()) {
@@ -77,11 +127,11 @@
                   (click)="toggleAccountPopUp()"
                 >
                   <i class="fa fa-user-o"></i>
-                  <span>Manage My Account</span>
+                  <span>My Account</span>
                 </button>
                 <button
                   class="flex items-center gap-4 text-white text-lg"
-                  (click)="onNavigateToAccount('/account')"
+                  (click)="onNavigateToMyOrder('/account')"
                   (click)="toggleAccountPopUp()"
                 >
                   <i class="fa fa-briefcase"></i>
@@ -89,6 +139,7 @@
                 </button>
                 <button
                   class="flex items-center gap-4 text-white text-lg"
+                  (click)="onNavigateToMyReview('/account')"
                   (click)="toggleAccountPopUp()"
                 >
                   <i class="fa fa-star-o"></i>
@@ -171,20 +222,60 @@
           </div>
           @if (authService.isLogin()) {
             <button
-              class="cursor-pointer text-lg"
+              class="cursor-pointer text-lg relative"
               routerLink="/wishlist"
               (click)="toggleMobileNav()"
             >
               <i class="fa fa-heart"></i>
+              <span
+                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+              >
+                {{ productService.wishlistItems().length }}
+              </span>
             </button>
-            <button class="cursor-pointer text-lg text-black">
+            <button
+              class="cursor-pointer relative text-lg text-black"
+              routerLink="/cart"
+              (click)="toggleMobileNav()"
+            >
               <i class="fa fa-shopping-cart"></i>
+              <span
+                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+              >
+                {{ productService.cartItems().length }}
+              </span>
+            </button>
+            <button
+              class="cursor-pointer relative text-lg text-black"
+              routerLink="/notifications"
+              (click)="toggleMobileNav()"
+            >
+              <i class="fa fa-bell"></i>
+              <span
+                class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+              >
+                {{ unreadNotication().length }}
+              </span>
             </button>
             <a
               class="cursor-pointer text-lg text-white bg-red-500 rounded-full size-8 flex items-center justify-center"
               (click)="toggleAccountPopUp()"
             >
-              <i class="fa fa-user"></i>
+              @if (authService.userProfile()?.avatar) {
+                <img
+                  [src]="authService.userProfile()?.avatar || ''"
+                  alt="User Avatar"
+                  class="rounded-full w-8 h-8 object-cover"
+                />
+              } @else {
+                <span
+                  class="size-8 rounded-full flex text-gray-600 bg-gray-50 border-gray-600 border uppercase items-center justify-center"
+                >
+                  {{ authService.userProfile()?.name.split()[0][0] }}
+                </span>
+              }
+
+              <!-- <i class="fa fa-user"></i> -->
             </a>
             @if (showAccountPopUp()) {
               <div
@@ -197,11 +288,11 @@
                     (click)="toggleAccountPopUp()"
                   >
                     <i class="fa fa-user-o"></i>
-                    <span>Manage My Account</span>
+                    <span>My Account</span>
                   </button>
                   <button
                     class="flex items-center gap-4 text-white text-lg"
-                    (click)="onNavigateToAccountOnMobile('/account')"
+                    (click)="onNavigateToMyOrder('/account')"
                     (click)="toggleAccountPopUp()"
                   >
                     <i class="fa fa-briefcase"></i>
@@ -209,6 +300,7 @@
                   </button>
                   <button
                     class="flex items-center gap-4 text-white text-lg"
+                    (click)="onNavigateToMyReview('/account')"
                     (click)="toggleAccountPopUp()"
                   >
                     <i class="fa fa-star-o"></i>

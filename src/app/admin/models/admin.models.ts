@@ -28,6 +28,49 @@ export interface Product {
   isActive: boolean;
 }
 
+export interface IProduct {
+  $id?: string | any;
+  productId?: string | any;
+  productName: string;
+  productDesc: string;
+  productImg?: string[] | any[];
+  productPrice: number;
+  productDiscount: number;
+  productStatus: boolean;
+  productRating: number;
+  productReviews: number;
+  productCategory: string;
+  productQty: number;
+  productSubtotal?: number;
+  productInStock: number;
+  isFeatured: boolean;
+}
+
+export interface IProductReview {
+  $id?: string | any;
+  productId: string;
+  productImg: string;
+  userId: string;
+  userName: string;
+  productName: string;
+  rating: number;
+  review: string;
+  $createdAt: Date;
+}
+
+export interface INotification {
+  $id: string;
+  userId: string;
+  title: string;
+  userMessage: string;
+  adminMessage: string;
+  type: string;
+  userIsRead: boolean;
+  adminIsRead: boolean;
+  orderId: string;
+  $createdAt: string;
+}
+
 // Order Model
 export interface Order {
   id: string;
@@ -65,13 +108,13 @@ export interface Address {
 
 // Customer Model
 export interface Customer {
-  id: string;
+  $id: string;
   name: string;
   email: string;
   phone: string;
   address?: Address;
   phoneNumber: string;
-  totalOrders: number;
+  totalOrder: number;
   totalSpent: number;
   $createdAt: Date;
   lastOrderDate?: Date;
@@ -99,4 +142,5 @@ export interface DashboardStats {
   lowStockProducts: number;
   thisMonthRevenue: number;
   monthlyGrowth: number;
+  // thisMonthOrders: number;
 }

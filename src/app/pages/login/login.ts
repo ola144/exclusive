@@ -4,6 +4,8 @@ import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
+import { AdminProductService } from '../../admin/services';
+import { NotificationService } from '../../admin/services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +17,8 @@ export class Login {
   authService: Auth = inject(Auth);
   router: Router = inject(Router);
   toastr: ToastrService = inject(ToastrService);
+  productService: AdminProductService = inject(AdminProductService);
+  notificationService: NotificationService = inject(NotificationService);
 
   @ViewChild('passwordRef') passwordRef!: ElementRef<HTMLInputElement>;
 
@@ -27,33 +31,30 @@ export class Login {
   profile = signal<any>(null);
 
   onLogin() {
-    debugger;
     this.loading.set(true);
 
     this.authService
       .login(this.email, this.password)
       .then(() => {
-        debugger;
+        const user = this.authService.userProfile();
 
-        this.authService.getProfile().then((res: any) => {
-          const user = res;
-
-          if (!user.address || !user.avatar) {
-            this.router.navigateByUrl('/complete-profile');
+        if (!user.address || !user.avatar) {
+          this.router.navigateByUrl('/complete-profile');
+          this.toastr.success('Login successfully!');
+        } else {
+          if (this.authService.isAdmin()) {
+            this.router.navigateByUrl('/admin/dashboard');
             this.toastr.success('Login successfully!');
           } else {
-            if (this.authService.isAdmin()) {
-              this.router.navigateByUrl('/admin/dashboard');
-              this.toastr.success('Login successfully!');
-            } else {
-              this.router.navigateByUrl('/');
-              this.toastr.success('Login successfully!');
-            }
+            this.router.navigateByUrl('/');
+            this.toastr.success('Login successfully!');
           }
-        });
-
-        const user = this.profile();
-        console.log(user);
+        }
+        this.productService.initializeCart();
+        this.productService.initializeWishlist();
+        this.authService.getProfile();
+        this.notificationService.getAllNotifications();
+        this.notificationService.getUserNotification();
       })
       .catch((err) => {
         this.toastr.error(err);
@@ -64,7 +65,6 @@ export class Login {
   }
 
   getProfile() {
-    debugger;
     this.authService.getProfile().then((res) => {
       this.profile.set(res);
     });

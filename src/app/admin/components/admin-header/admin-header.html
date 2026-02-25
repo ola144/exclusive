@@ -5,26 +5,29 @@
   </div>
   <div class="flex items-center space-x-4">
     <!-- Notifications -->
-    <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
-      🔔
-      <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+    <button class="relative text-xl" routerLink="/admin/notifications">
+      <i class="fa fa-bell"></i>
+      <span
+        class="absolute -top-2 -right-2 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs bg-red-500"
+        >{{ unreadNotication().length }}</span
+      >
     </button>
 
     <!-- Profile -->
     <div class="items-center space-x-3 hidden sm:flex">
-      @if (userProfile()?.avatar) {
-        <img [src]="userProfile()?.avatar" alt="Admin" class="w-10 h-10 rounded-full" />
+      @if (authService.userProfile()?.avatar) {
+        <img [src]="authService.userProfile()?.avatar" alt="Admin" class="w-10 h-10 rounded-full" />
       } @else {
         <span
           class="size-10 rounded-full flex text-gray-600 bg-gray-50 border-gray-600 border uppercase items-center justify-center"
         >
-          {{ userProfile()?.name.split()[0][0] }}
+          {{ authService.userProfile()?.name.split()[0][0] }}
         </span>
       }
 
       <div>
-        <p class="text-sm font-semibold text-gray-800">{{ userProfile()?.name }}</p>
-        <p class="text-xs text-gray-600 capitalize">{{ userProfile()?.role }}</p>
+        <p class="text-sm font-semibold text-gray-800">{{ authService.userProfile()?.name }}</p>
+        <p class="text-xs text-gray-600 capitalize">{{ authService.userProfile()?.role }}</p>
       </div>
     </div>
   </div>

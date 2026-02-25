@@ -2,7 +2,7 @@
   <div class="flex items-center gap-3">
     <button class="text-gray-400 cursor-pointer" (click)="onNavigateHome('/')">Home</button>
     <span class="text-gray-400">/</span>
-    <button class="text-black font-bold" disabled>Not Found</button>
+    <button class="text-black font-bold" disabled>Contact Us</button>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
@@ -17,9 +17,9 @@
           <p class="font-bold">Call To Us</p>
         </div>
         <p>We are available 24/7. 7 days a week.</p>
-        <p>Phone: +880161112222</p>
+        <p>Phone: {{ settingService.storeDetails()[0]?.phone }}</p>
       </div>
-
+      <!-- Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque, quod consequatur iusto suscipit mollitia delectus fugit quibusdam quos consequuntur voluptas repudiandae hic aut iste natus doloribus. Dicta cumque qui excepturi. -->
       <hr class="bg-black h-0.5 w-full" />
 
       <div class="flex flex-col gap-3">
@@ -32,33 +32,52 @@
           <p class="font-bold">Write To Us</p>
         </div>
         <p>Fill out our form and we will contact you within 24 hours.</p>
-        <p>Emails: customer@exclusive.com</p>
-        <p>Emails: support@exclusive.com</p>
+        <p>Email: {{ settingService.storeDetails()[0]?.email }}</p>
       </div>
     </div>
-    <div class="lg:col-span-8 md:col-span-7 box">
+    <div class="lg:col-span-8 md:col-span-7 box" [formGroup]="contactForm">
       <div class="flex items-center flex-wrap lg:flex-nowrap gap-5 w-full">
         <div class="input-group">
-          <input type="text" id="name" required />
+          <input type="text" id="name" required formControlName="name" />
           <label for="name">Your Name <span class="text-red-400">*</span></label>
         </div>
         <div class="input-group">
-          <input type="email" id="email" required />
+          <input type="email" id="email" required formControlName="email" />
           <label for="email">Your Email <span class="text-red-400">*</span></label>
         </div>
         <div class="input-group">
-          <input type="tel" id="phone" required />
+          <input type="tel" id="phone" required formControlName="phone" />
           <label for="phone">Your Phone <span class="text-red-400">*</span></label>
         </div>
       </div>
+      <div>
+        <div class="input-group">
+          <input type="text" id="subject" required formControlName="subject" />
+          <label for="subject">Subject <span class="text-red-400">*</span></label>
+        </div>
+      </div>
       <div class="input-group h-[500ppx]">
-        <textarea name="message" class="resize-none" id="message" rows="15" required></textarea>
+        <textarea
+          name="message"
+          class="resize-none"
+          id="message"
+          rows="15"
+          required
+          formControlName="message"
+        ></textarea>
         <label for="message" class="msgLabel"
           >Your Message <span class="text-red-400">*</span></label
         >
       </div>
       <div class="flex justify-end">
-        <app-button text="Send Message" type="red-btn" size="md"></app-button>
+        <app-button
+          text="Send Message"
+          type="red-btn"
+          size="md"
+          [disabled]="contactForm.invalid"
+          [loading]="loading()"
+          (handleOnlick)="sendMessage()"
+        ></app-button>
       </div>
     </div>
   </div>

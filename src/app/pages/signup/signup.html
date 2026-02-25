@@ -15,34 +15,68 @@
           <p class="font-bold">Enter you details below</p>
         </div>
         <form class="flex flex-col gap-10">
-          <input
-            type="text"
-            name="name"
-            id="name"
-            placeholder="Name"
-            class="border-b border-b-black outline-none w-full"
-            [(ngModel)]="name"
-            required
-          />
-          <input
-            type="email"
-            name="email"
-            id="email"
-            placeholder="Email"
-            class="border-b border-b-black outline-none w-full"
-            [(ngModel)]="email"
-            required
-            email
-          />
-          <input
-            type="tel"
-            name="phoneNumber"
-            id="phoneNumber"
-            placeholder="Phone Number"
-            class="border-b border-b-black outline-none w-full"
-            [(ngModel)]="phoneNumber"
-            required
-          />
+          <div class="w-full">
+            <input
+              type="text"
+              name="name"
+              id="name"
+              placeholder="Full Name"
+              class="border-b border-b-black outline-none w-full"
+              [(ngModel)]="name"
+              required
+              #nameRef="ngModel"
+            />
+            @if (nameRef.touched && nameRef.invalid) {
+              <div class="text-red-500 text-sm">
+                @if (nameRef.errors?.['required']) {
+                  <span>Full Name is required!</span>
+                }
+              </div>
+            }
+          </div>
+          <div class="w-full">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Email"
+              class="border-b border-b-black outline-none w-full"
+              [(ngModel)]="email"
+              required
+              email
+              #emailRef="ngModel"
+            />
+            @if (emailRef.touched && emailRef.invalid) {
+              <div class="text-red-500 text-sm">
+                @if (emailRef.errors?.['required']) {
+                  <span>Email address is required!</span>
+                }
+                @if (emailRef.errors?.['email']) {
+                  <span>Please provide a valid email address!</span>
+                }
+              </div>
+            }
+          </div>
+          <div class="w-full">
+            <input
+              type="tel"
+              name="phoneNumber"
+              id="phoneNumber"
+              placeholder="Phone Number"
+              class="border-b border-b-black outline-none w-full"
+              [(ngModel)]="phoneNumber"
+              required
+              #phoneRef="ngModel"
+            />
+            @if (phoneRef.touched && phoneRef.invalid) {
+              <div class="text-red-500 text-sm">
+                @if (phoneRef.errors?.['required']) {
+                  <span>Full Name is required!</span>
+                }
+              </div>
+            }
+          </div>
+
           <div class="relative">
             <input
               type="password"
@@ -53,7 +87,15 @@
               [(ngModel)]="password"
               required
               #passwordRef
+              #passwordRef2="ngModel"
             />
+            @if (passwordRef2.touched && passwordRef2.invalid) {
+              <div class="text-red-500 text-sm">
+                @if (passwordRef2.errors?.['required']) {
+                  <span>Password is required!</span>
+                }
+              </div>
+            }
             @if (passwordIcons()) {
               <button class="absolute right-3 -top-0.5 text-gray-500" (click)="togglePassword()">
                 <i class="fa fa-eye-slash"></i>
@@ -71,6 +113,9 @@
               [type]="'red-btn'"
               [size]="'lg'"
               [loading]="loading()"
+              [disabled]="
+                nameRef.invalid || emailRef.invalid || phoneRef.invalid || passwordRef2.invalid
+              "
               (handleOnlick)="onSignup()"
             ></app-button>
           </div>

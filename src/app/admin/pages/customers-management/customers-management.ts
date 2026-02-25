@@ -1,10 +1,12 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminCustomerService } from '../../services/admin-customer.service';
 import { Customer } from '../../models/admin.models';
 import { Button } from '../../../components/button/button';
 import { ToastrService } from 'ngx-toastr';
+import { AdminOrderService } from '../../services';
+import { Auth } from '../../../services/auth';
 
 @Component({
   selector: 'app-customers-management',
@@ -14,9 +16,25 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class CustomersManagementComponent implements OnInit {
   toastr: ToastrService = inject(ToastrService);
+  orderService: AdminOrderService = inject(AdminOrderService);
+  authService: Auth = inject(Auth);
 
   public searchTerm = '';
   public selectedCustomer: Customer | null = null;
+
+  filteredOrder(selectedCustId: string) {
+    return this.orderService.getAllOrders().filter((order) => order.customerId === selectedCustId);
+  }
+
+  customerTotalSpent(selectedCustId: string) {
+    const orders = this.orderService
+      .getAllOrders()
+      .filter((order) => order.customerId === selectedCustId);
+
+    return orders.reduce((sum, order) => sum + order.total, 0);
+  }
+
+  customerIsActive = computed(() => (this.selectedCustomer?.totalOrder ?? 0) > 0);
 
   confirmDeleteCustomer = signal<boolean>(false);
   loading = signal<boolean>(false);
@@ -27,8 +45,8 @@ export class CustomersManagementComponent implements OnInit {
 
   ngOnInit() {
     this.customerService.getAllCustomers();
-
-    console.log(this.customerService.getAllCustomers());
+    this.orderService.getAllOrders();
+    this.orderService.initializeOrderData();
   }
 
   showConfirmDelete(id: string) {
@@ -54,9 +72,15 @@ export class CustomersManagementComponent implements OnInit {
       });
   }
 
+  viewCustomer(customer: Customer) {
+    this.selectedCustomer = customer;
+    this.filteredOrder(customer.$id);
+    this.customerTotalSpent(customer.$id);
+  }
+
   toggleCustomerStatus() {
     if (this.selectedCustomer) {
-      this.customerService.toggleCustomerStatus(this.selectedCustomer.id);
+      this.customerService.toggleCustomerStatus(this.selectedCustomer.$id);
       this.selectedCustomer.isActive = !this.selectedCustomer.isActive;
     }
   }
