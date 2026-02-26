@@ -2,18 +2,18 @@
   <div class="flex justify-between items-center">
     <h3 class="font-bold">Feedbacks</h3>
   </div>
-  <div class="">
+  <div class="w-full">
     @if (masterServ.messages().length === 0) {
       <div class="flex items-center justify-center flex-col gap-2 text-[5rem]">
         <i>💬</i>
-        <h4 class="text-2xl font-semibold">There is no feedback yet!</h4>
+        <h5 class="text-xl font-semibold">There is no feedback yet!</h5>
       </div>
     } @else {
       <div class="grid md:grid-cols-2 grid-cols-1 gap-x-2 gap-y-3">
         @for (item of masterServ.messages(); track $index) {
           <div class="py-1 px-2 my-1 border-y border-gray-400 w-full relative bg-white font-normal">
             <div class="flex flex-col gap-1">
-              <h5 class="flex items-start gap-1 text-justify">
+              <h5 class="flex items-start gap-1 text-justify text-sm">
                 <span class="font-bold">Name: </span>
                 {{ item.name }}
               </h5>
@@ -24,7 +24,7 @@
             </div>
             <div class="flex items-center justify-between">
               <div class="flex flex-col gap-1">
-                <h5 class="flex items-start gap-1">
+                <h5 class="flex items-start gap-1 text-sm">
                   <span class="font-bold capitalize">Subject: </span>
                   {{ item.subject }}
                 </h5>
@@ -33,9 +33,12 @@
                   {{ item.message }}
                 </p>
               </div>
-              <div class="absolute top-1 right-1">
+              <div class="absolute top-1 right-1 hidden sm:block">
                 <p>{{ item.$createdAt | date: 'short' }}</p>
               </div>
+            </div>
+            <div class="flex justify-end sm:hidden">
+              <p>{{ item.$createdAt | date: 'short' }}</p>
             </div>
           </div>
         }

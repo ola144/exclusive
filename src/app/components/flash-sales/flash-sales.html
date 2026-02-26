@@ -7,25 +7,25 @@
       <app-title [title1]="title1" [title2]="'Flash Sales'"></app-title>
 
       <!-- Countdown -->
-      <div class="flex items-center gap-4 text-center">
+      <div class="flex items-center gap-4 text-center flex-wrap">
         <div>
-          <h5 class="md:text-2xl text-xl">Days</h5>
-          <h5 class="font-semibold md:text-2xl text-xl">{{ days() | number: '2.0' }}</h5>
+          <h5 class="md:text-2xl text-lg">Days</h5>
+          <h5 class="font-semibold md:text-2xl text-lg">{{ days() | number: '2.0' }}</h5>
         </div>
         <span class="text-red-500">:</span>
         <div>
-          <h5 class="md:text-2xl text-xl">Hours</h5>
-          <h5 class="font-semibold md:text-2xl text-xl">{{ hours() | number: '2.0' }}</h5>
+          <h5 class="md:text-2xl text-lg">Hours</h5>
+          <h5 class="font-semibold md:text-2xl text-lg">{{ hours() | number: '2.0' }}</h5>
         </div>
         <span class="text-red-500">:</span>
         <div>
           <h5 class="md:text-2xl text-xl">Minutes</h5>
-          <h5 class="font-semibold md:text-2xl text-xl">{{ minutes() | number: '2.0' }}</h5>
+          <h5 class="font-semibold md:text-2xl text-lg">{{ minutes() | number: '2.0' }}</h5>
         </div>
         <span class="text-red-500">:</span>
         <div>
-          <h5 class="md:text-2xl text-xl">Seconds</h5>
-          <h5 class="font-semibold md:text-2xl text-xl">{{ seconds() | number: '2.0' }}</h5>
+          <h5 class="md:text-2xl text-lg">Seconds</h5>
+          <h5 class="font-semibold md:text-2xl text-lg">{{ seconds() | number: '2.0' }}</h5>
         </div>
       </div>
     </div>

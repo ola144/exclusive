@@ -14,9 +14,9 @@
     <app-loader></app-loader>
   } @else {
     @if (notificationService.userNotification().length === 0) {
-      <div class="flex items-center justify-center flex-col gap-2 text-[10rem]">
+      <div class="flex items-center justify-center flex-col gap-2 text-[5rem]">
         <i class="fa fa-bell text-gray-400"></i>
-        <h4 class="text-2xl font-semibold">Your Notication is Empty</h4>
+        <h5 class="text-xl font-semibold">Your Notication is Empty</h5>
       </div>
     } @else {
       @for (notification of notificationService.userNotification(); track $index) {
