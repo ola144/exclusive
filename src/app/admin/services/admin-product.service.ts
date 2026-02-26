@@ -174,7 +174,7 @@ export class AdminProductService {
     };
 
     await databases
-      .createDocument(DATABASE_ID, WISHLIST_COLLECTION_ID, product.$id, payload)
+      .createDocument(DATABASE_ID, WISHLIST_COLLECTION_ID, ID.unique(), payload)
       .then(async () => {
         this.toastr.success('Added to wishlist');
         await this.initializeWishlist();

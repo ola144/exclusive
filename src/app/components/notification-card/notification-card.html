@@ -4,17 +4,47 @@
       class="py-1 px-2 my-1 border-y border-gray-400 w-full relative notification"
       [ngClass]="!notification.userIsRead ? 'bg-gray-300 font-bold' : 'bg-white font-normal'"
     >
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between flex-wrap gap-y-3">
         <div class="flex flex-col gap-1">
           <h5>{{ notification.title }}</h5>
-          <p>{{ notification.userMessage }}</p>
+          <p class="sm:w-[90%] w-full">{{ notification.userMessage }}</p>
         </div>
         <div class="mr-24">
           <p>{{ notification.$createdAt | date: 'short' }}</p>
         </div>
       </div>
 
-      <div class="absolute top-3 right-4 text-gray-500 actions">
+      <div class="absolute top-3 right-4 text-gray-500 actions sm:block hidden">
+        <div class="flex items-center gap-3">
+          @if (notification.userIsRead) {
+            <button
+              class="text-lg hover:text-gray-700"
+              (click)="markAsUnRead(notification.$id)"
+              title="Mark As Unread"
+            >
+              <i class="fa fa-envelope-square"></i>
+            </button>
+          } @else {
+            <button
+              class="text-lg hover:text-gray-700"
+              (click)="markAsRead(notification.$id)"
+              title="Mark As Read"
+            >
+              <i class="fa fa-envelope-open"></i>
+            </button>
+          }
+
+          <button
+            class="text-lg hover:text-gray-700"
+            title="Delete"
+            (click)="deleteNotification(notification.$id)"
+          >
+            <i class="fa fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="absolute top-0 right-1 text-gray-500 sm:hidden block">
         <div class="flex items-center gap-3">
           @if (notification.userIsRead) {
             <button
@@ -49,17 +79,47 @@
       class="py-1 px-2 my-1 border-y border-gray-400 w-full relative notification"
       [ngClass]="!notification.adminIsRead ? 'bg-gray-300 font-bold' : 'bg-white font-normal'"
     >
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between flex-wrap">
         <div class="flex flex-col gap-1">
           <h5>{{ notification.title }}</h5>
-          <p>{{ notification.adminMessage }}</p>
+          <p class="sm:w-[90%] w-full">{{ notification.adminMessage }}</p>
         </div>
         <div class="mr-24">
           <p>{{ notification.$createdAt | date: 'short' }}</p>
         </div>
       </div>
 
-      <div class="absolute top-3 right-4 text-gray-500 actions">
+      <div class="absolute top-3 right-4 text-gray-500 actions sm:block hidden">
+        <div class="flex items-center gap-3">
+          @if (notification.adminIsRead) {
+            <button
+              class="text-lg hover:text-gray-700"
+              (click)="adminMarkAsUnRead(notification.$id)"
+              title="Mark As Unread"
+            >
+              <i class="fa fa-envelope-square"></i>
+            </button>
+          } @else {
+            <button
+              class="text-lg hover:text-gray-700"
+              (click)="adminMarkAsRead(notification.$id)"
+              title="Mark As Read"
+            >
+              <i class="fa fa-envelope-open"></i>
+            </button>
+          }
+
+          <button
+            class="text-lg hover:text-gray-700"
+            title="Delete"
+            (click)="deleteNotification(notification.$id)"
+          >
+            <i class="fa fa-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="absolute top-0 right-0 text-gray-500 sm:hidden block">
         <div class="flex items-center gap-3">
           @if (notification.adminIsRead) {
             <button

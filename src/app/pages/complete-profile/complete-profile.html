@@ -13,7 +13,7 @@
       <button class="text-black font-bold" disabled>Complete Profie</button>
     </div>
     <p class="text-black">
-      Welcome! <span class="text-red-500">{{ userProfile()?.name }}</span>
+      Welcome! <span class="text-red-500">{{ authService.userProfile()?.name }}</span>
     </p>
   </div>
 
@@ -47,7 +47,7 @@
             type="text"
             id="firstName"
             placeholder="Mid"
-            [value]="userProfile()?.name.split(' ')[0]"
+            [value]="authService.userProfile()?.name.split(' ')[0]"
             disabled
             class="rounded-sm border border-gray-500 px-2 py-1 outline-none disabled:bg-gray-400"
           />
@@ -58,7 +58,7 @@
             type="text"
             id="lastName"
             placeholder="Rimel"
-            [value]="userProfile()?.name.split(' ')[1]"
+            [value]="authService.userProfile()?.name.split(' ')[1]"
             disabled
             class="rounded-sm border border-gray-500 px-2 py-1 outline-none disabled:bg-gray-400"
           />
@@ -70,7 +70,7 @@
           <input
             type="email"
             id="email"
-            [value]="userProfile()?.email"
+            [value]="authService.userProfile()?.email"
             placeholder="rimel@gmail.com"
             disabled
             class="rounded-sm border border-gray-500 px-2 py-1 outline-none disabled:bg-gray-400"
