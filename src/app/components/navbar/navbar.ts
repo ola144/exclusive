@@ -161,6 +161,11 @@ export class Navbar implements OnInit, OnDestroy {
     this.showMobileNav.set(false);
   }
 
+  onNavigateHomeOnMobile(link: string) {
+    this.router.navigateByUrl(link);
+    this.showMobileNav.set(false);
+  }
+
   logout() {
     this.loading.set(true);
     this.authService

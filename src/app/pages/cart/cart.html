@@ -5,7 +5,7 @@
     <button class="text-black font-bold" disabled>Cart</button>
   </div>
   <div class="w-full flex flex-col gap-8">
-    <div class="overflow-y-auto">
+    <div class="overflow-x-auto">
       <table class="w-full">
         <thead class="my-5">
           <tr class="text-center text-gray-400 shadow-md rounded-md my-5 px-8">
@@ -40,7 +40,7 @@
                     <img
                       [src]="productService.getImageUrl(item.productImg?.[0])"
                       [alt]="item.productName"
-                      class="w-10 h-10"
+                      class="sm:w-10 sm:h-10 h-5 w-5"
                     />
                     <button
                       class="text-white bg-red-500 size-4 rounded-full flex items-center justify-center text-sm absolute left-0 top-0"
@@ -83,8 +83,8 @@
     </div>
   </div>
 
-  <div class="flex items-start justify-end">
-    <div class="border border-black p-3 rounded-sm space-y-3 w-1/2">
+  <div class="flex items-start sm:justify-end">
+    <div class="border border-black p-3 rounded-sm space-y-3 sm:w-1/2 w-full">
       <h4 class="font-bold">Cart Total</h4>
       <div class="flex items-center justify-between border-b border-b-gray-400 pb-2 w-full">
         <p class="">Subtotal:</p>

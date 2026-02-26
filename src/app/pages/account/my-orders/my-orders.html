@@ -129,30 +129,32 @@
         <!-- Order Items -->
         <div>
           <h3 class="font-semibold text-gray-800 mb-2">Order Items</h3>
-          <table class="w-full text-sm border-collapse">
-            <thead>
-              <tr class="bg-gray-100 border">
-                <th class="px-3 py-2 text-left">Product</th>
-                <th class="px-3 py-2 text-center">Quantity</th>
-                <th class="px-3 py-2 text-right">Price</th>
-                <th class="px-3 py-2 text-right">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of selectedOrder.items; track $index) {
-                <tr class="border">
-                  <td class="px-3 py-2">{{ item.productName }}</td>
-                  <td class="px-3 py-2 text-center">{{ item.quantity }}</td>
-                  <td class="px-3 py-2 text-right">${{ item.price | number: '1.2-2' }}</td>
-                  <td class="px-3 py-2 text-right">${{ item.subtotal | number: '1.2-2' }}</td>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm border-collapse">
+              <thead>
+                <tr class="bg-gray-100 border">
+                  <th class="px-3 py-2 text-left">Product</th>
+                  <th class="px-3 py-2 text-center">Quantity</th>
+                  <th class="px-3 py-2 text-right">Price</th>
+                  <th class="px-3 py-2 text-right">Total</th>
                 </tr>
-              }
-              <tr class="bg-gray-100 border font-semibold">
-                <td colspan="3" class="px-3 py-2 text-right">Total:</td>
-                <td class="px-3 py-2 text-right">${{ selectedOrder.total | number: '1.2-2' }}</td>
-              </tr>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (item of selectedOrder.items; track $index) {
+                  <tr class="border">
+                    <td class="px-3 py-2">{{ item.productName }}</td>
+                    <td class="px-3 py-2 text-center">{{ item.quantity }}</td>
+                    <td class="px-3 py-2 text-right">${{ item.price | number: '1.2-2' }}</td>
+                    <td class="px-3 py-2 text-right">${{ item.subtotal | number: '1.2-2' }}</td>
+                  </tr>
+                }
+                <tr class="bg-gray-100 border font-semibold">
+                  <td colspan="3" class="px-3 py-2 text-right">Total:</td>
+                  <td class="px-3 py-2 text-right">${{ selectedOrder.total | number: '1.2-2' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- Shipping Address -->

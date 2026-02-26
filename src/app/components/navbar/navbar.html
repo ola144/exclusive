@@ -187,9 +187,8 @@
         </div>
         <ul class="flex flex-col gap-10 text-black font-medium text-left">
           <button
-            routerLink="/"
             routerLinkActive="active"
-            (click)="toggleMobileNav()"
+            (click)="onNavigateHomeOnMobile('/')"
             [routerLinkActiveOptions]="{ exact: true }"
           >
             Home
