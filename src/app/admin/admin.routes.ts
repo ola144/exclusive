@@ -12,7 +12,8 @@ import { Feedback } from './pages/feedback/feedback';
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
-    component: AdminLayoutComponent,
+    loadComponent: () =>
+      import('./components/admin-layout/admin-layout').then((m) => m.AdminLayoutComponent),
     children: [
       {
         path: 'dashboard',

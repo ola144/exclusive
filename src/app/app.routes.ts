@@ -24,7 +24,7 @@ import { PrivacyPolicy } from './pages/privacy-policy/privacy-policy';
 export const routes: Routes = [
   {
     path: 'admin',
-    children: ADMIN_ROUTES,
+    loadChildren: () => import('./admin/admin.routes').then((m) => m.ADMIN_ROUTES),
     canActivate: [adminExclusieGuard],
   },
   {
