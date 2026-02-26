@@ -46,16 +46,22 @@ export class AdminSidebarComponent implements OnInit {
   }
 
   showFullSidebar() {
-    this.sidebar.nativeElement.classList.add('full-sidebar');
+    const width = document.documentElement.clientWidth;
+    if (width >= 640) {
+      this.sidebar.nativeElement.classList.add('full-sidebar');
+    }
   }
 
   hideFullSidebar() {
-    this.sidebar.nativeElement.classList.remove('full-sidebar');
-
-    if (this.sidebarIsPinned()) {
-      this.sidebar.nativeElement.classList.add('full-sidebar');
-    } else {
+    const width = document.documentElement.clientWidth;
+    if (width >= 640) {
       this.sidebar.nativeElement.classList.remove('full-sidebar');
+
+      if (this.sidebarIsPinned()) {
+        this.sidebar.nativeElement.classList.add('full-sidebar');
+      } else {
+        this.sidebar.nativeElement.classList.remove('full-sidebar');
+      }
     }
   }
 
