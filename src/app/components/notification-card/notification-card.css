@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 .notification:hover .actions {
-  @apply block;
+  @apply sm:block;
 }
 
 .actions {
