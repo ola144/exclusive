@@ -90,7 +90,7 @@ export class NotificationService {
 
       // update signal locally
       this.userNotification.update((notifications) =>
-        notifications.map((n) => ({ ...n, isRead: true })),
+        notifications.map((n) => ({ ...n, userIsRead: true })),
       );
 
       this.toastr.success('All notifications marked as read.');
