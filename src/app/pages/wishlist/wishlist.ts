@@ -16,6 +16,7 @@ export class Wishlist implements OnInit {
   productService: AdminProductService = inject(AdminProductService);
 
   products = signal<IProduct[]>([]);
+  loading = signal<boolean>(false);
 
   justForYou = computed(() => {
     const items = this.productService.products();
@@ -26,12 +27,19 @@ export class Wishlist implements OnInit {
   });
 
   ngOnInit(): void {
-    // this.wishList.set(wishList);
-    // this.products.set(allProducts);
     this.productService.initializeWishlist();
   }
 
   deleteWishListItem(item: IProduct) {
-    this.productService.removeFromWishlist(item.$id);
+    this.loading.set(true);
+    this.productService
+      .removeFromWishlist(item.$id)
+      .then(() => {})
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        this.loading.set(false);
+      });
   }
 }

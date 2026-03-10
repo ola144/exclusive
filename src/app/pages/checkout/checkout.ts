@@ -6,12 +6,13 @@ import { Auth } from '../../services/auth';
 import { OrderService } from '../../services/order';
 import { ToastrService } from 'ngx-toastr';
 import { FormsModule } from '@angular/forms';
+import { Loader } from '../../components/loader/loader';
 
 declare var PaystackPop: any;
 
 @Component({
   selector: 'app-checkout',
-  imports: [RouterLink, Button, FormsModule],
+  imports: [RouterLink, Button, FormsModule, Loader],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })
