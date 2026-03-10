@@ -49,6 +49,8 @@ export class Navbar implements OnInit, OnDestroy {
   confirmLogout = signal<boolean>(false);
   userProfile = signal<any>(null);
 
+  isLoggedIn = this.authService.isLogin();
+
   unreadNotication = computed(() => {
     return this.notificationService.userNotification().filter((n) => !n.userIsRead);
   });

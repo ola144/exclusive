@@ -63,11 +63,19 @@ export class Auth {
   }
 
   async getProfile() {
-    const user = await account.get();
+    this.loading.set(true);
 
-    // fetch role profile
-    const res = await databases.getDocument(DATABASE_ID, USERS_COLLECTION_ID, user.$id);
-    this.userProfile.set(res);
+    try {
+      const user = await account.get();
+
+      // fetch role profile
+      const res = await databases.getDocument(DATABASE_ID, USERS_COLLECTION_ID, user.$id);
+      this.userProfile.set(res);
+    } catch (error: any) {
+      this.toastr.error(error);
+    } finally {
+      this.loading.set(false);
+    }
   }
 
   async logout() {

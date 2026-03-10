@@ -43,7 +43,8 @@
                       class="sm:w-10 sm:h-10 h-5 w-5"
                     />
                     <button
-                      class="text-white bg-red-500 size-4 rounded-full flex items-center justify-center text-sm absolute left-0 top-0"
+                      class="text-white bg-red-500 size-4 rounded-full flex items-center justify-center text-sm absolute left-0 top-0 disabled:bg-gray-400 disabled:text-white"
+                      [disabled]="loading[item.$id]"
                       (click)="deleteCartItem(item)"
                     >
                       <i class="fa fa-close"></i>

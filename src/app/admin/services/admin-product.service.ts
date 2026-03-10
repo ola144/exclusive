@@ -52,10 +52,11 @@ export class AdminProductService {
     this.initializeData();
     this.getAllReviews();
     this.getReviewsForUser();
+    this.initializeWishlist();
   }
 
   async initializeData() {
-    this.loading.set(false);
+    // this.loading.set(true);
 
     try {
       const res: any = await databases.listDocuments(DATABASE_ID, PRODUCTS_COLLECTION_ID);
@@ -64,7 +65,7 @@ export class AdminProductService {
     } catch (error: any) {
       this.toastr.error(error);
     } finally {
-      this.loading.set(false);
+      // this.loading.set(false);
     }
   }
 
@@ -185,7 +186,7 @@ export class AdminProductService {
   }
 
   async initializeWishlist() {
-    this.loading.set(false);
+    // this.loading.set(true);
 
     try {
       // Get Current User
@@ -197,9 +198,9 @@ export class AdminProductService {
 
       this.wishlistItems.set(res.documents);
     } catch (error) {
-      // this.toastr.error('Failed to fetch');
+      console.log(error);
     } finally {
-      this.loading.set(false);
+      // this.loading.set(false);
     }
   }
 
@@ -239,7 +240,7 @@ export class AdminProductService {
   }
 
   async initializeCart() {
-    this.loading.set(true);
+    // this.loading.set(true);
 
     try {
       // Get Current User
@@ -253,7 +254,7 @@ export class AdminProductService {
     } catch (error) {
       console.log(error);
     } finally {
-      this.loading.set(false);
+      // this.loading.set(false);
     }
   }
 

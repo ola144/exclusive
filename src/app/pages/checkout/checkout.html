@@ -8,60 +8,66 @@
   <div class="grid sm:grid-cols-2 grid-cols-1 gap-10 gap-y-5 w-full">
     <div class="flex flex-col gap-10">
       <h2 class="font-bold">Billing Details</h2>
-      <div class="space-y-8">
-        <div class="input-group">
-          <input
-            type="text"
-            id="name"
-            required
-            [(ngModel)]="customerName"
-            (ngModelChange)="customerName.set($event)"
-            [value]="customerName()"
-          />
-          <label for="name">Your Name <span class="text-red-400">*</span></label>
+      @if (authService.loading()) {
+        <div class="flex items-center justify-center h-full bg-gray-500/50">
+          <app-loader></app-loader>
         </div>
-        <div class="input-group">
-          <input
-            type="text"
-            id="address"
-            required
-            [(ngModel)]="customerAddress"
-            (ngModelChange)="customerAddress.set($event)"
-            [value]="customerAddress()"
-          />
-          <label for="address">Address<span class="text-red-400">*</span></label>
+      } @else {
+        <div class="space-y-8">
+          <div class="input-group">
+            <input
+              type="text"
+              id="name"
+              required
+              [(ngModel)]="customerName"
+              (ngModelChange)="customerName.set($event)"
+              [value]="customerName()"
+            />
+            <label for="name">Your Name <span class="text-red-400">*</span></label>
+          </div>
+          <div class="input-group">
+            <input
+              type="text"
+              id="address"
+              required
+              [(ngModel)]="customerAddress"
+              (ngModelChange)="customerAddress.set($event)"
+              [value]="customerAddress()"
+            />
+            <label for="address">Address<span class="text-red-400">*</span></label>
+          </div>
+          <div class="input-group">
+            <input
+              type="text"
+              id="phone"
+              required
+              [(ngModel)]="customerPhone"
+              (ngModelChange)="customerPhone.set($event)"
+              [value]="customerPhone()"
+            />
+            <label for="phone">Phone Number <span class="text-red-400">*</span></label>
+          </div>
+          <div class="input-group">
+            <input
+              [value]="authService.userProfile()?.email"
+              type="email"
+              id="email"
+              required
+              disabled
+            />
+            <label for="email">Email Address<span class="text-red-400">*</span></label>
+          </div>
+          <div class="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="saveInfo"
+              [checked]="saveInfo()"
+              (change)="onSaveInfoChange($event.target.checked)"
+            />
+            <label for="saveInfo">Save this infomation for faster check-out next time</label>
+          </div>
         </div>
-        <div class="input-group">
-          <input
-            type="text"
-            id="phone"
-            required
-            [(ngModel)]="customerPhone"
-            (ngModelChange)="customerPhone.set($event)"
-            [value]="customerPhone()"
-          />
-          <label for="phone">Phone Number <span class="text-red-400">*</span></label>
-        </div>
-        <div class="input-group">
-          <input
-            [value]="authService.userProfile()?.email"
-            type="email"
-            id="email"
-            required
-            disabled
-          />
-          <label for="email">Email Address<span class="text-red-400">*</span></label>
-        </div>
-        <div class="flex items-center gap-3">
-          <input
-            type="checkbox"
-            id="saveInfo"
-            [checked]="saveInfo()"
-            (change)="onSaveInfoChange($event.target.checked)"
-          />
-          <label for="saveInfo">Save this infomation for faster check-out next time</label>
-        </div>
-      </div>
+      }
     </div>
 
     <div class="w-full space-y-3">

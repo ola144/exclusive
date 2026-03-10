@@ -4,7 +4,7 @@
       <h4>Wishlist ({{ productService.wishlistItems().length }})</h4>
     </div>
 
-    @if (productService.loading()) {
+    @if (productService.loading() === true) {
       <app-loader></app-loader>
     } @else {
       @if (productService.wishlistItems().length === 0) {
@@ -21,6 +21,7 @@
               [hideDetailsBtn]="'hidden'"
               [hideDeleteBtn]="'flex'"
               (deleteWishListItem)="deleteWishListItem(item)"
+              [deleteWishlistItem]="loading"
             ></app-product-card>
           }
         </div>

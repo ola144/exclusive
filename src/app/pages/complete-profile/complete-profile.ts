@@ -53,8 +53,9 @@ export class CompleteProfile implements OnInit {
   saveChanges() {
     this.loading.set(true);
     this.authService
-      .completeProfile(this.userProfile().$id, this.imagePreview(), this.address)
+      .completeProfile(this.authService.userProfile().$id, this.imagePreview(), this.address)
       .then(() => {
+        this.authService.getProfile();
         this.toastr.success('Profile Updated Successfully!');
         if (this.authService.isAdmin()) {
           this.router.navigateByUrl('/admin/dashboard');

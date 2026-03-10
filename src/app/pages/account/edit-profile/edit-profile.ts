@@ -5,10 +5,11 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { NgxImageCompressService } from 'ngx-image-compress';
 import { FormsModule } from '@angular/forms';
+import { Loader } from '../../../components/loader/loader';
 
 @Component({
   selector: 'app-edit-profile',
-  imports: [Button, FormsModule],
+  imports: [Button, FormsModule, Loader],
   templateUrl: './edit-profile.html',
   styleUrl: './edit-profile.css',
 })
@@ -70,6 +71,7 @@ export class EditProfile implements OnInit {
         this.oldPassword,
       )
       .then(() => {
+        this.authService.getProfile();
         this.toastr.success('Profile Updated Successfully!');
       })
       .catch((error) => {

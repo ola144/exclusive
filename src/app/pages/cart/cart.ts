@@ -17,6 +17,8 @@ export class Cart implements OnInit {
   router: Router = inject(Router);
   productService: AdminProductService = inject(AdminProductService);
 
+  loading: Record<string, boolean> = {};
+
   ngOnInit(): void {
     this.productService.initializeCart();
   }
@@ -72,7 +74,16 @@ export class Cart implements OnInit {
   }
 
   deleteCartItem(item: IProduct) {
-    this.productService.removeFromCart(item.$id);
+    this.loading[item.$id] = true;
+    this.productService
+      .removeFromCart(item.$id)
+      .then(() => {})
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        this.loading[item.$id] = false;
+      });
   }
 
   onNavigateHome(link: string) {

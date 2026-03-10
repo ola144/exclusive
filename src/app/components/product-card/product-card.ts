@@ -26,9 +26,13 @@ export class ProductCard implements OnInit {
   @Input() hideWishlistBtn!: string;
   @Input() hideDetailsBtn!: string;
   @Input() hideDeleteBtn!: string;
+  @Input() deleteWishlistItem = signal<boolean>(false);
   @Output() deleteWishListItem: EventEmitter<any> = new EventEmitter<any>();
 
   showReviewForm = signal<boolean>(false);
+  loading = signal<boolean>(false);
+
+  addToWisList = signal<boolean>(false);
 
   productService: AdminProductService = inject(AdminProductService);
   authService: Auth = inject(Auth);
@@ -48,11 +52,29 @@ export class ProductCard implements OnInit {
   }
 
   addToCart(product: IProduct) {
-    this.productService.addToCart(product);
+    this.loading.set(true);
+    this.productService
+      .addToCart(product)
+      .then(() => {})
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        this.loading.set(false);
+      });
   }
 
   addProductToWishList(product: IProduct) {
-    this.productService.addToWishList(product);
+    this.addToWisList.set(true);
+    this.productService
+      .addToWishList(product)
+      .then(() => {})
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        this.loading.set(false);
+      });
   }
 
   deleteFromWishList(product: any) {
