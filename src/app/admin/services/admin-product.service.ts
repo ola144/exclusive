@@ -14,6 +14,7 @@ import {
 } from '../../core/appwrite.config';
 import { ID, Query } from 'appwrite';
 import { ToastrService } from 'ngx-toastr';
+import { Auth } from '../../services/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -48,8 +49,13 @@ export class AdminProductService {
 
   lowStockProducts = computed(() => this.products().filter((p) => p.productInStock < 10));
 
-  constructor(private toastr: ToastrService) {
+  constructor(
+    private toastr: ToastrService,
+    private authService: Auth,
+  ) {
     this.initializeData();
+
+    if (!this.authService.isLogin()) return;
     this.getAllReviews();
     this.getReviewsForUser();
     this.initializeWishlist();
@@ -188,6 +194,8 @@ export class AdminProductService {
   async initializeWishlist() {
     // this.loading.set(true);
 
+    if (!this.authService.isLogin()) return;
+
     try {
       // Get Current User
       const user = await account.get();
@@ -241,6 +249,8 @@ export class AdminProductService {
 
   async initializeCart() {
     // this.loading.set(true);
+
+    if (!this.authService.isLogin()) return;
 
     try {
       // Get Current User
@@ -328,6 +338,8 @@ export class AdminProductService {
 
   async getReviewsForUser() {
     this.loading.set(true);
+
+    if (!this.authService.isLogin()) return;
 
     const user = await account.get();
 

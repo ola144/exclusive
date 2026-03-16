@@ -8,6 +8,7 @@ import {
 } from '../../core/appwrite.config';
 import { Query } from 'appwrite';
 import { ToastrService } from 'ngx-toastr';
+import { Auth } from '../../services/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,7 @@ export class NotificationService {
 
   loading = signal<boolean>(false);
 
-  constructor() {
+  constructor(private authService: Auth) {
     this.getAllNotifications();
     this.getUserNotification();
   }
@@ -41,6 +42,8 @@ export class NotificationService {
 
   async getUserNotification() {
     this.loading.set(true);
+
+    if (!this.authService.isLogin()) return;
 
     try {
       const user = await account.get();
