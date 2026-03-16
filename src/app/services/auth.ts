@@ -65,6 +65,8 @@ export class Auth {
   async getProfile() {
     this.loading.set(true);
 
+    if (!this.isLogin()) return;
+
     try {
       const user = await account.get();
 

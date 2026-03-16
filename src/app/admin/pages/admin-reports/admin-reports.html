@@ -112,7 +112,14 @@
     <div class="bg-white rounded-lg shadow-md p-6">
       <h3 class="text-lg font-semibold text-gray-800 mb-4">Sales by Category</h3>
       <div class="h-64 bg-gray-100 rounded flex items-center justify-center text-gray-500">
-        <canvas #categoryChart class="h-96"></canvas>
+        <apx-chart
+          [series]="chartOptions().series"
+          [chart]="chartOptions().chart"
+          [labels]="chartOptions().labels"
+          [responsive]="chartOptions().responsive"
+        >
+        </apx-chart>
+        <!-- [title]="chartOptions().title" -->
       </div>
     </div>
 
@@ -153,14 +160,4 @@
       </div>
     </div>
   </div>
-
-  <!-- Export Section -->
-  <!-- <div class="bg-white rounded-lg shadow-md p-6">
-    <h3 class="text-lg font-semibold text-gray-800 mb-4">Export Report</h3>
-    <div class="flex flex-wrap gap-2">
-      <app-button text="📊 Export as PDF" type="green-btn" size="lg"></app-button>
-      <app-button text="📥 Export as CSV" type="green-outline" size="lg"></app-button>
-      <app-button text="📧 Email Report" type="red-btn" size="lg"></app-button>
-    </div>
-  </div> -->
 </section>

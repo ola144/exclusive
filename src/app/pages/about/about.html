@@ -6,7 +6,7 @@
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
-    <div class="py-10 px-10">
+    <div class="py-10 md:px-10 px-0">
       <div class="flex flex-col gap-2 mb-2">
         <h2 class="text-left font-bold">Our Story</h2>
         <p class="font-normal text-justify">
@@ -34,38 +34,39 @@
 
 <section class="my-10 overflow-hidden main">
   <div class="flex items-center justify-center w-max scroll gap-20 overflow-hidden">
-    @for(testament of testaments(); track $index){
-    <button
-      class="border-2 border-gray-400 rounded-sm text-center mx-auto py-2 cursor-pointer text-gray-400 hover:bg-red-500 hover:text-white hover:border-0 w-full"
-    >
-      <div class="flex items-center flex-col gap-2 justify-center w-[150px]">
-        <div class="bg-gray-500 size-10 rounded-full flex items-center justify-center">
-          <div
-            class="bg-black size-8 p-1 rounded-full flex items-center justify-center text-white font-bold"
-          >
-            <i [class]="testament.icon"></i>
+    @for (testament of testaments(); track $index) {
+      <button
+        class="border-2 border-gray-400 rounded-sm text-center mx-auto py-2 cursor-pointer text-gray-400 hover:bg-red-500 hover:text-white hover:border-0 w-full"
+      >
+        <div class="flex items-center flex-col gap-2 justify-center w-[150px]">
+          <div class="bg-gray-500 size-10 rounded-full flex items-center justify-center">
+            <div
+              class="bg-black size-8 p-1 rounded-full flex items-center justify-center text-white font-bold"
+            >
+              <i [class]="testament.icon"></i>
+            </div>
           </div>
+          <h3 class="text-black">{{ testament.numbers }}k</h3>
+          <span class="font-normal text-[10px] text-black">{{ testament.desc }}</span>
         </div>
-        <h3 class="text-black">{{ testament.numbers }}k</h3>
-        <span class="font-normal text-[10px] text-black">{{ testament.desc }}</span>
-      </div>
-    </button>
-    } @for(testament of testaments(); track $index){
-    <button
-      class="border-2 border-gray-400 rounded-sm text-center mx-auto py-2 cursor-pointer text-gray-400 hover:bg-red-500 hover:text-white hover:border-0 w-full"
-    >
-      <div class="flex items-center flex-col gap-2 justify-center w-[150px]">
-        <div class="bg-gray-500 size-10 rounded-full flex items-center justify-center">
-          <div
-            class="bg-black size-8 p-1 rounded-full flex items-center justify-center text-white font-bold"
-          >
-            <i [class]="testament.icon"></i>
+      </button>
+    }
+    @for (testament of testaments(); track $index) {
+      <button
+        class="border-2 border-gray-400 rounded-sm text-center mx-auto py-2 cursor-pointer text-gray-400 hover:bg-red-500 hover:text-white hover:border-0 w-full"
+      >
+        <div class="flex items-center flex-col gap-2 justify-center w-[150px]">
+          <div class="bg-gray-500 size-10 rounded-full flex items-center justify-center">
+            <div
+              class="bg-black size-8 p-1 rounded-full flex items-center justify-center text-white font-bold"
+            >
+              <i [class]="testament.icon"></i>
+            </div>
           </div>
+          <h3 class="text-black">{{ testament.numbers }}k</h3>
+          <span class="font-normal text-[10px] text-black">{{ testament.desc }}</span>
         </div>
-        <h3 class="text-black">{{ testament.numbers }}k</h3>
-        <span class="font-normal text-[10px] text-black">{{ testament.desc }}</span>
-      </div>
-    </button>
+      </button>
     }
   </div>
 </section>
@@ -73,32 +74,32 @@
 <section class="main pt-20 relative overflow-hidden">
   <div class="flex gap-1 relative" #slider>
     @for (team of teams(); track $index) {
-    <div
-      class="w-[370px] h-fit flex flex-col gap-2"
-      (mouseenter)="pauseSlider()"
-      (mouseleave)="playSlider()"
-    >
-      <div class="bg-[#F5F5F5] pt-4 rounded-sm relative">
-        <div class="member">
-          <img [src]="team.img" [alt]="team.name" class="w-[w-236px] h-[391px] mx-auto" />
+      <div
+        class="w-[370px] h-fit flex flex-col gap-2"
+        (mouseenter)="pauseSlider()"
+        (mouseleave)="playSlider()"
+      >
+        <div class="bg-[#F5F5F5] pt-4 rounded-sm relative">
+          <div class="member">
+            <img [src]="team.img" [alt]="team.name" class="w-[w-236px] h-[391px] mx-auto" />
 
-          <!-- Social media icon -->
-          <div
-            class="bg-black opacity-60 backdrop-blur-2xl h-full w-full flex items-center justify-center absolute inset-0 transition-all duration-300 social"
-          >
-            <div class="text-white flex gap-3 text-lg opacity-100">
-              <a href="#"><i class="fa fa-facebook"></i></a>
-              <a href="#"><i class="fa fa-instagram"></i></a>
-              <a href="#"> <i class="fa fa-twitter"></i></a>
+            <!-- Social media icon -->
+            <div
+              class="bg-black opacity-60 backdrop-blur-2xl h-full w-full flex items-center justify-center absolute inset-0 transition-all duration-300 social"
+            >
+              <div class="text-white flex gap-3 text-lg opacity-100">
+                <a href="#"><i class="fa fa-facebook"></i></a>
+                <a href="#"><i class="fa fa-instagram"></i></a>
+                <a href="#"> <i class="fa fa-twitter"></i></a>
+              </div>
             </div>
           </div>
         </div>
+        <div class="flex flex-col gap-1">
+          <h2>{{ team.name }}</h2>
+          <span>{{ team.role }}</span>
+        </div>
       </div>
-      <div class="flex flex-col gap-1">
-        <h2>{{ team.name }}</h2>
-        <span>{{ team.role }}</span>
-      </div>
-    </div>
     }
   </div>
   <div class="tns-nav">

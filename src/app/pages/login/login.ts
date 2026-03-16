@@ -49,6 +49,9 @@ export class Login {
             this.router.navigateByUrl('/');
             this.toastr.success('Login successfully!');
           }
+
+          this.email = '';
+          this.password = '';
         }
         this.productService.initializeCart();
         this.productService.initializeWishlist();

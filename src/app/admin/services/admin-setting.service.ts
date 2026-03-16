@@ -6,6 +6,7 @@ import {
   STORE_DETAILS_COLLECTION_ID,
   USERS_COLLECTION_ID,
 } from '../../core/appwrite.config';
+import { Auth } from '../../services/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class AdminSettingService {
   storeDetails = signal<StoreDetails[]>([]);
   adminProfile = signal<any>(null);
 
-  constructor() {
+  constructor(private authService: Auth) {
     this.getStoreDetails();
     this.getProfile();
   }
@@ -45,6 +46,8 @@ export class AdminSettingService {
   }
 
   async getProfile() {
+    if (!this.authService.isLogin()) return;
+
     const user = await account.get();
 
     // fetch role profile

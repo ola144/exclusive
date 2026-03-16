@@ -6,24 +6,39 @@ import {
   ElementRef,
   inject,
   OnInit,
-  ViewChild,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Button } from '../../../components/button/button';
 import { AdminCustomerService, AdminOrderService, AdminProductService } from '../../services';
-import { Chart, ChartConfiguration, registerables } from 'chart.js';
+import {
+  ApexChart,
+  ApexAxisChartSeries,
+  ApexXAxis,
+  ApexTitleSubtitle,
+  NgApexchartsModule,
+} from 'ng-apexcharts';
+import { ApexResponsive } from 'apexcharts';
 
-Chart.register(...registerables);
+export type ChartOptions = {
+  series: ApexAxisChartSeries;
+  chart: ApexChart;
+  xaxis: ApexXAxis;
+  title: ApexTitleSubtitle;
+  responsive: ApexResponsive;
+};
+
+// import { Chart, ChartConfiguration, registerables } from 'chart.js';
+
+// Chart.register(...registerables);
 
 @Component({
   selector: 'app-admin-reports',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NgApexchartsModule],
   templateUrl: './admin-reports.html',
 })
 export class AdminReportsComponent implements OnInit, AfterViewInit {
-  @ViewChild('categoryChart') chartRef!: ElementRef<HTMLCanvasElement>;
-  chart!: Chart;
+  readonly chartRef = viewChild.required<ElementRef<HTMLCanvasElement>>('categoryChart');
 
   orderService: AdminOrderService = inject(AdminOrderService);
   customerService: AdminCustomerService = inject(AdminCustomerService);
@@ -46,7 +61,72 @@ export class AdminReportsComponent implements OnInit, AfterViewInit {
       }),
     );
 
-    return grouped;
+    return Object.entries(grouped).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  });
+
+  chartOptions = computed(() => {
+    const data = this.salesByCategory();
+
+    return {
+      series: data.map((d) => d.value),
+      chart: {
+        type: 'donut' as const,
+        height: 400,
+        width: 350,
+      },
+
+      legend: {
+        position: 'right',
+      },
+
+      labels: data.map((d) => d.name),
+
+      responsive: [
+        {
+          breakpoint: 1024,
+          options: {
+            chart: {
+              width: 400,
+              height: 400,
+            },
+            legend: {
+              position: 'right',
+            },
+          },
+        },
+        {
+          breakpoint: 768,
+          options: {
+            chart: {
+              width: 250,
+              height: 250,
+            },
+            legend: {
+              position: 'bottom',
+            },
+          },
+        },
+        {
+          breakpoint: 640,
+          options: {
+            chart: {
+              width: 200,
+              height: 200,
+            },
+            legend: {
+              position: 'bottom',
+            },
+          },
+        },
+      ],
+
+      // title: {
+      //   text: 'Sales by Category',
+      // },
+    };
   });
 
   conversionRate = computed(() => {
@@ -77,13 +157,11 @@ export class AdminReportsComponent implements OnInit, AfterViewInit {
   });
 
   constructor() {
-    effect(() => {
-      const data = this.salesByCategory();
-
-      if (!this.chartRef) return;
-
-      this.renderChart(data);
-    });
+    // effect(() => {
+    //   const data = this.salesByCategory();
+    //   if (!this.chartRef) return;
+    //   // this.renderChart(data);
+    // });
   }
 
   ngOnInit(): void {
@@ -92,36 +170,36 @@ export class AdminReportsComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {}
 
-  renderChart(data: Record<string, number>) {
-    const labels = Object.keys(data);
-    const values = Object.values(data);
+  // renderChart(data: Record<string, number>) {
+  //   const labels = Object.keys(data);
+  //   const values = Object.values(data);
 
-    console.log(labels, values);
+  //   console.log(labels, values);
 
-    if (this.chart) {
-      this.chart.destroy();
-    }
+  //   if (this.chart) {
+  //     this.chart.destroy();
+  //   }
 
-    this.chart = new Chart(this.chartRef.nativeElement, {
-      type: 'doughnut', // or 'pie', 'bar', 'doughnut
-      data: {
-        labels,
-        datasets: [
-          {
-            data: values,
-            backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
-          },
-        ],
-      },
-      options: {
-        cutout: '65%',
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'bottom',
-          },
-        },
-      },
-    });
-  }
+  //   this.chart = new Chart(this.chartRef.nativeElement, {
+  //     type: 'doughnut', // or 'pie', 'bar', 'doughnut
+  //     data: {
+  //       labels,
+  //       datasets: [
+  //         {
+  //           data: values,
+  //           backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+  //         },
+  //       ],
+  //     },
+  //     options: {
+  //       cutout: '65%',
+  //       responsive: true,
+  //       plugins: {
+  //         legend: {
+  //           position: 'bottom',
+  //         },
+  //       },
+  //     },
+  //   });
+  // }
 }
